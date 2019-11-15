@@ -1,0 +1,5 @@
+#!/usr/bin/bash
+set -e
+gcc hello-world.c -o hello-world
+sleep 1
+./hello-world

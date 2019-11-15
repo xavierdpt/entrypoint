@@ -1,0 +1,2 @@
+#!/usr/bin/bash
+ocaml hello-world.ml
