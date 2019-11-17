@@ -1,0 +1,4 @@
+#!/usr/bin/bash
+sudo apt-get install git
+cd ~
+git clone --single-branch --branch inside https://github.com/xavierdpt/entrypoint.git inside
