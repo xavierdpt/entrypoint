@@ -1,0 +1,4 @@
+#!/usr/bin/bash
+set -e
+gcc errno.c -o errno
+./errno

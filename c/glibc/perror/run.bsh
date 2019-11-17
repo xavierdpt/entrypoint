@@ -1,0 +1,4 @@
+#!/usr/bin/bash
+set -e
+gcc perror.c -o perror
+./perror
