@@ -1,0 +1,5 @@
+#!/usr/bin/bash
+set -e
+gcc filetype.c -o filetype
+sleep 1
+./filetype

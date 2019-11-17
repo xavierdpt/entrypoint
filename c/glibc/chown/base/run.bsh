@@ -1,0 +1,5 @@
+#!/usr/bin/bash
+set -e
+gcc base.c -o base
+sleep 1
+./base
