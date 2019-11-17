@@ -1,4 +1,0 @@
-#!/usr/bin/bash
-set -e
-rustc hello-world.rs -o hello-world
-./hello-world

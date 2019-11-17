@@ -1,5 +1,0 @@
-#!/usr/bin/bash
-set -e
-g++ hello-world.cpp -o hello-world
-sleep 1
-./hello-world
