@@ -1,0 +1,5 @@
+#!/usr/bin/bash
+set -e
+gcc program.c -E -o program.E
+gcc -ansi program.c -E -o program.ansi.E
+vim -d program.E program.ansi.E

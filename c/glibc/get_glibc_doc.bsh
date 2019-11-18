@@ -1,0 +1,8 @@
+#!/usr/bin/bash
+set -e
+sudo apt-get install -y glibc-doc
+cp /usr/share/doc/glibc-doc-reference/libc.pdf.gz .
+gunzip libc.pdf.gz
+mv libc.pdf /vagrant
+echo "libc.pdf available in /vagrant"
+

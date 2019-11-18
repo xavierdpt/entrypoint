@@ -1,3 +1,3 @@
 #!/usr/bin/bash
 set -e
-sudo apt-get install -y bash-completion git
+sudo apt-get install -y bash-completion manpages-dev

@@ -1,0 +1,4 @@
+#!/usr/bin/bash
+set -e
+gcc --ansi program.c -o program
+./program 

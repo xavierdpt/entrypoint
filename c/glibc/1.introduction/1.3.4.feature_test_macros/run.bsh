@@ -1,0 +1,26 @@
+#!/usr/bin/bash
+set -e
+gcc program.c -E -o program.default.E
+gcc -ansi program.c -E -o program.ansi.E
+gcc -ansi -D_POSIX_SOURCE program.c -E -o program.POSIX_SOURCE.E
+gcc -ansi -D_POSIX_C_SOURCE=1 program.c -E -o program.POSIX_C_SOURCE=1.E
+gcc -ansi -D_POSIX_C_SOURCE=2 program.c -E -o program.POSIX_C_SOURCE=2.E
+gcc -ansi -D_POSIX_C_SOURCE=199309L program.c -E -o program.POSIX_C_SOURCE=199309L.E
+gcc -ansi -D_POSIX_C_SOURCE=199506L program.c -E -o program.POSIX_C_SOURCE=199506L.E
+gcc -ansi -D_POSIX_C_SOURCE=200112L program.c -E -o program.POSIX_C_SOURCE=200112L.E
+gcc -ansi -D_POSIX_C_SOURCE=200809L program.c -E -o program.POSIX_C_SOURCE=200809L.E
+gcc -ansi -D_XOPEN_SOURCE program.c -E -o program.XOPEN_SOURCE.E
+gcc -ansi -D_XOPEN_SOURCE_EXTENDED program.c -E -o program.XOPEN_SOURCE_EXTENDED.E
+gcc -ansi -D_LARGEFILE_SOURCE program.c -E -o program.LARGEFILE_SOURCE.E
+gcc -ansi -D_LARGEFILE64_SOURCE program.c -E -o program.LARGEFILE64_SOURCE.E
+gcc -ansi -D_FILE_OFFSET_BITS program.c -E -o program.FILE_OFFSET_BITS.E
+gcc -ansi -D_ISOC99_SOURCE program.c -E -o program.ISOC99_SOURCE.E
+gcc -ansi -D_ISOC11_SOURCE program.c -E -o program.ISOC11_SOURCE.E
+gcc -ansi -D__STDC_WANT_LIB_EXT2__ program.c -E -o program.STDC_WANT_LIB_EXT2.E
+gcc -ansi -D__STDC_WANT_IEC_60559_BFP_EXT__ program.c -E -o program.STDC_WANT_IEC_60559_BFP_EXT.E
+gcc -ansi -D__STDC_WANT_IEC_60559_FUNCS_EXT__ program.c -E -o program.STDC_WANT_IEC_60559_FUNCS_EXT.E
+gcc -ansi -D__STDC_WANT_IEC_60559_TYPES_EXT__ program.c -E -o program.STDC_WANT_IEC_60559_TYPES_EXT.E
+gcc -ansi -D_GNU_SOURCE program.c -E -o program.GNU_SOURCE.E
+gcc -ansi -D_ATFILE_SOURCE program.c -E -o program.ATFILE_SOURCE.E
+gcc -ansi -D_FORTIFY_SOURCE=1 program.c -E -o program.FORTIFY_SOURCE=1.E
+gcc -ansi -D_FORTIFY_SOURCE=2 program.c -E -o program.FORTIFY_SOURCE=2.E
