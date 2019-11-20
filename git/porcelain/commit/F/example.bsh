@@ -1,0 +1,16 @@
+#!/usr/bin/bash
+
+if [ -e repository ] ; then
+	rm -Rf repository
+fi
+
+mkdir repository
+cd repository
+git init
+git config user.name user
+git config user.email email
+echo hello >hello
+git add hello
+git commit -F ../commit_msg
+git log
+echo "Note: The commit message has been read from commit_msg"

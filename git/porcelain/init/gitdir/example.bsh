@@ -1,0 +1,8 @@
+#!/usr/bin/bash
+set -e
+if [ -e dir ] ; then
+	rm -Rf dir
+fi
+
+mkdir dir
+GIT_DIR=$PWD/dir git init --bare

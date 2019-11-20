@@ -1,0 +1,15 @@
+#!/usr/bin/bash
+set -e
+
+if [ -e repository ] ; then
+	rm -Rf repository
+fi
+
+export GIT_TEMPLATE_DIR="$PWD/template_data"
+
+mkdir repository
+cd repository
+git init 
+
+echo "Content of template_data has been copied into .git"
+

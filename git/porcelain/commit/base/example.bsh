@@ -1,0 +1,13 @@
+#!/usr/bin/bash
+
+if [ -e repository ] ; then
+	rm -Rf repository
+fi
+
+mkdir repository
+cd repository
+git init
+echo hello >hello
+git add hello
+git commit -m hello
+git log

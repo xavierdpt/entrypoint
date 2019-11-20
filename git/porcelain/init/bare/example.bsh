@@ -1,0 +1,57 @@
+#!/usr/bin/bash
+
+function pause() {
+	read -p "."
+}
+
+function run() {
+	CMD="$1"
+	echo "\$ $CMD"
+	read -p "[run it]"
+	bash -c "$CMD"
+	pause
+}
+
+function runp() {
+	CMD="$1"
+	echo "\$ $CMD"
+	read -p "[run it]"
+	$CMD
+	pause
+}
+
+
+if [ -e repository.git ] ; then
+	rm -Rf repository.git
+fi
+
+if [ -e secondclone ] ; then
+	rm -Rf secondclone
+fi
+
+if [ -e firstclone ] ; then
+	rm -Rf firstclone
+fi
+
+echo "Let's create a bare repository"
+run "mkdir repository.git"
+runp "cd repository.git"
+run "git init --bare"
+runp "cd .."
+
+echo "We can clone this bare repository and commit and push to it"
+run "git clone repository.git firstclone"
+runp "cd firstclone"
+run "echo hello >hello"
+run "git add hello"
+run "git commit -m \"A commit\""
+run "git push"
+runp "cd .."
+
+echo "If we clone the bare repository a second time, we should see what has been pushed to it"
+run "git clone repository.git secondclone"
+runp "cd secondclone"
+run "ls"
+run "cat hello"
+run "git log"
+runp "cd .."

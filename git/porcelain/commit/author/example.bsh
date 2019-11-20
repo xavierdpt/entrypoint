@@ -1,0 +1,35 @@
+#!/usr/bin/bash
+
+if [ -e repository ] ; then
+	rm -Rf repository
+fi
+
+mkdir repository
+cd repository
+git init
+git config user.name user
+git config user.email email
+echo hello >hello
+git add hello
+git commit -m "First commit" --author "me <myemail>"
+
+echo modified >hello
+git add hello
+git commit -m "Second commit" 
+
+echo modified_again >hello
+git add hello
+git commit -m "Third commit" --author "me"
+
+
+echo and_again >hello
+git add hello
+git commit -m "Fourth commit" --author "nobody" 2>&1 || true
+
+git log
+
+echo "Note:"
+echo "- First commit overrides the author"
+echo "- Second commit uses configured author"
+echo "- Third commit overrides the author but searches in the history for the full author identification"
+echo "- Fourth commit overrides the author but searches for an author that is not in the history and fails"

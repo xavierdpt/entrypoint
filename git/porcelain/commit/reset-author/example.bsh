@@ -1,0 +1,26 @@
+#!/usr/bin/bash
+
+if [ -e repository ] ; then
+	rm -Rf repository
+fi
+
+mkdir repository
+cd repository
+git init
+git config user.name user
+git config user.email email
+echo modifyme >modifyme
+git add modifyme
+git commit -m "Initial commit"
+
+LAST_COMMIT=`git log --oneline -1 | cut -f1 -d' '`
+
+git config user.name newuser
+git config user.email newemail
+echo modified >modifyme
+git add modifyme
+git commit -C "${LAST_COMMIT}" --reset-author
+echo "\/ \/ \/ \/ \/ \/ \/ \/ \/ \/ \/ \/ \/ \/ \/ \/ \/ \/ \/ \/ \/ \/ \/ \/ \/ \/ \/"
+git log
+
+echo 'We see that with --reset-author, the commit message is re-used, but the author and date are changed.'

@@ -1,0 +1,11 @@
+#!/usr/bin/bash
+set -e
+
+if [ -e repository ] ; then
+	rm -Rf repository
+fi
+
+mkdir repository
+cd repository
+git init 
+echo "Content of repository/.git contains the content of /usr/share/git-core/templates/"

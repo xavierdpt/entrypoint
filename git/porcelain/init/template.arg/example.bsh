@@ -1,0 +1,13 @@
+#!/usr/bin/bash
+set -e
+
+if [ -e repository ] ; then
+	rm -Rf repository
+fi
+
+mkdir repository
+cd repository
+git init --template=../template_data
+
+echo "Content of template_data has been copied into .git"
+

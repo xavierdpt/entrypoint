@@ -1,0 +1,15 @@
+#!/usr/bin/bash
+
+if [ -e repository ] ; then
+	rm -Rf repository
+fi
+if [ -e hello ]; then
+	rm hello
+fi
+
+mkdir repository
+cd repository
+git init
+echo hello >hello
+git add hello
+git commit -m hello --dry-run --short 

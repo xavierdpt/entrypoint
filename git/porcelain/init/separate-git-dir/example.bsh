@@ -1,0 +1,17 @@
+#!/usr/bin/bash
+
+set -e
+
+for dir in repo gitdir ; do
+	if [ -e $dir ] ; then
+		rm -Rf $dir
+	fi
+done
+
+mkdir repo gitdir
+
+cd repo
+
+git init --separate-git-dir=../gitdir
+
+echo "Note that repo contains a .git file whose content points to the external gitdir directory"

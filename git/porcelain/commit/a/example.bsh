@@ -1,0 +1,20 @@
+#!/usr/bin/bash
+
+if [ -e repository ] ; then
+	rm -Rf repository
+fi
+
+mkdir repository
+cd repository
+git init
+echo modifyme >modifyme
+echo deleteme >deleteme
+git add modifyme deleteme
+git commit -m "Initial commit"
+
+echo modified >modifyme
+rm deleteme
+echo new >new
+git commit -a --dry-run
+
+echo 'We see that "git commit -a" automatically commits modifications and deletions, but not new files.'

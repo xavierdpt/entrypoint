@@ -1,0 +1,13 @@
+#!/usr/bin/bash
+
+if [ -e repository ] ; then
+	rm -Rf repository
+fi
+
+mkdir repository
+cd repository
+git init
+echo hello >hello
+git add hello
+git commit -m hello --dry-run --short -z | xargs -0 -n 1 echo "Change: "
+echo "Note: The -z option replaces new-line with NUL characters, we use xargs to turn these NUL characters back into newlines and decorate it."

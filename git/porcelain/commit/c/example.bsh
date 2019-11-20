@@ -1,0 +1,26 @@
+#!/usr/bin/bash
+
+set -e
+
+if [ -e repository ] ; then
+	rm -Rf repository
+fi
+
+mkdir repository
+cd repository
+git init
+git config user.name user
+git config user.email email
+echo modifyme >modifyme
+git add modifyme
+git commit -m "Initial commit"
+
+LAST_COMMIT=`git log --oneline -1 | cut -f1 -d' '`
+
+echo modified >modifyme
+git add modifyme
+git commit -c "${LAST_COMMIT}" 
+echo "\/ \/ \/ \/ \/ \/ \/ \/ \/ \/ \/ \/ \/ \/ \/ \/ \/ \/ \/ \/ \/ \/ \/ \/ \/ \/ \/"
+git log
+
+echo 'We see that with -c, the commit message is reused and can can be modified'
