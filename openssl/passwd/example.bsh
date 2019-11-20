@@ -1,0 +1,5 @@
+#!/usr/bin/bash
+for algo in -crypt -1 -apr1 -aixmd5 -5 -6 ; do
+	echo "Using ${algo}"
+	openssl passwd "${algo}" -table -in passwords
+done

@@ -1,0 +1,48 @@
+#!/usr/bin/bash
+
+function run() {
+	CMD="$1"
+	echo "\$ $CMD"
+	read -p "."
+	bash -c "$CMD"
+	read -p "."
+}
+
+echo "This script is about the OpenSSL 'list' command"
+read -p "."
+
+echo "Here's some documentation about this command."
+run "openssl list -help"
+
+echo "Here are OpenSSL commands"
+run "openssl list -commands"
+
+echo "Here are OpenSSL digest commands"
+run "openssl list -digest-commands"
+
+echo "Here are OpenSSL cipher commands"
+run "openssl list -cipher-commands"
+
+echo "Here are OpenSSL digest algorithms"
+run "openssl list -digest-algorithms"
+
+echo "Here are OpenSSL cipher algorithms"
+run "openssl list -cipher-algorithms"
+
+echo "Here are OpenSSL public key algorithms"
+run "openssl list -public-key-algorithms"
+
+echo "Here are OpenSSL public key methods"
+run "openssl list -public-key-methods"
+
+echo "Here are some disabled features"
+run "openssl list -disabed"
+
+echo "There's also a mysterious thing about missing help."
+run "openssl list -missing-help"
+
+echo "To get the information in single column, use -1."
+run "openssl list -1 -commands"
+
+echo "Finally, list can also be use to list the options of other commands."
+run "openssl list -options list"

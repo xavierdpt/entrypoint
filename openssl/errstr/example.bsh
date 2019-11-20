@@ -1,0 +1,2 @@
+#!/usr/bin/bash
+openssl errstr 2006D080

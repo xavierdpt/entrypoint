@@ -1,0 +1,11 @@
+#!/usr/bin/bash
+set -e
+
+# Generate the scanner from the specification
+flex scanner.flex
+
+# Compile the scanner, and link against the fl library to get the default implementation of yywrap
+gcc -lfl lex.yy.c
+
+# Run the resulting program with the demo input
+./a.out <input 

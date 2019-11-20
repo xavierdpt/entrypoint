@@ -1,0 +1,9 @@
+#!/usr/bin/bash
+set -e
+
+sudo apt-get install -y flex-doc
+cp /usr/share/doc/flex-doc/flex.pdf.gz .
+gunzip flex.pdf.gz
+mv flex.pdf /vagrant
+echo "flex.pdf available in /vagrant"
+

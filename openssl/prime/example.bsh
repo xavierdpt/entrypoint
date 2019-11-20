@@ -1,0 +1,38 @@
+#!/usr/bin/bash
+
+function run() {
+	CMD="$1"
+	echo "\$ $CMD"
+	read -p "."
+	$CMD
+	read -p "."
+}
+
+echo "This script is about the OpenSSL 'prime' command"
+read -p "."
+
+echo "Here's some documentation about this command."
+run "openssl prime -help"
+
+echo "It can be used to check whether a number is a prime."
+read -p "."
+echo "For example, 25 is not a prime."
+run "openssl prime 25"
+
+echo "But 23 is a prime."
+run "openssl prime 23"
+
+echo "Note that the numbers are displayed in hexadecimal, then in decimal in parentheses."
+read -p "."
+
+echo "Most importantly, it can be used to generate a prime number on the given number of bits."
+run "openssl prime -generate -bits 16"
+
+echo "It can also outputs the number in hexadecimal"
+run "openssl prime -generate -bits 16 -hex"
+
+echo "A safe prime is a prime which is such that (n-1)/2 is also prime."
+run "openssl prime -generate -bits 16 -safe"
+
+echo "Prime number generation may possibly use probabilistic primality testing. The -check option is used to parametrized how many checks to perform. For some implementations of OpenSSL, this option is ignored."
+run "openssl prime -generate -bits 16 -checks 10"

@@ -1,0 +1,4 @@
+#!/usr/bin/bash
+set -e
+openssl dsaparam -genkey -out params 2048
+openssl gendsa -out private_key.pem params

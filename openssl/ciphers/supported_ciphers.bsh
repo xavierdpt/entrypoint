@@ -1,0 +1,2 @@
+#!/usr/bin/bash
+openssl ciphers -s | sed 's/:/\n/g' | sort

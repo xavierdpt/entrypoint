@@ -1,0 +1,2 @@
+#!/usr/bin/bash
+openssl enc -e -in plaintext.txt -out encrypted.bin -aes-128-cbc -pass pass:password
