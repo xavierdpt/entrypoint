@@ -1,0 +1,45 @@
+#!/usr/bin/bash
+
+set -e
+
+# Remove those directories and recreate them
+for dir in bare repository repository2 ; do
+	if [ -e $dir ] ; then
+		rm -Rf $dir
+	fi
+done
+
+# Create the central repository to simulate a server
+mkdir bare
+cd bare
+git init --bare
+cd ..
+
+# Clone the repository and commit a first file and push
+git clone bare repository
+cd repository
+git config user.name user
+git config user.email email
+echo firstfile >firstfile
+git add firstfile
+git commit -m firstfile
+git push
+
+# Create a branch, check it out, add a secondfile to the branch, commit and push to remote
+git branch mybranch
+git checkout mybranch
+echo secondfile >secondfile
+git add secondfile
+git commit -m secondfile
+git push -u origin mybranch
+cd ..
+
+# Clone the reposiory a second time and checkout the branch
+git clone bare repository2
+cd repository2
+git branch -r
+git checkout mybranch
+ls
+
+echo "repository2 contains secondfile in branch mybranch"
+
