@@ -1,0 +1,4 @@
+#!/usr/bin/bash
+set -e
+info --subnodes screen | tee doc.txt
+echo "Documentation available in doc.txt"

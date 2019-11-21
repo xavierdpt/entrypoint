@@ -1,0 +1,4 @@
+#!/usr/bin/bash
+set -e
+sudo startx /usr/bin/blackbox
+sudo xhost +local:0.0

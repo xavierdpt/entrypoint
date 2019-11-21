@@ -1,0 +1,11 @@
+#!/usr/bin/bash
+set -e
+
+if [ ! -e apache-jena-3.13.1 ] ; then
+	if [ ! -e apache-jena-3.13.1.tar.gz ] ; then
+		wget http://apache.osuosl.org/jena/binaries/apache-jena-3.13.1.tar.gz
+	fi
+	tar xfv apache-jena-3.13.1.tar.gz
+fi
+
+

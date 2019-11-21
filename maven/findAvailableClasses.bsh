@@ -1,0 +1,4 @@
+#!/usr/bin/bash
+set -e
+find ~/.m2/repository -name '*.jar' | while read i ; do unzip -l $i ; done | grep '\.class$' | sed 's/^.*\s//' | grep '\$' -v | sed 's/\.class$//' | sed 's/\//./g' | sort -u | sed 's/^/import /' | sed 's/$/;/'
+

@@ -1,0 +1,4 @@
+#!/usr/bin/bash
+set -e
+go build hello-world.go
+./hello-world

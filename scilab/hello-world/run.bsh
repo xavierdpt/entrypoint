@@ -1,0 +1,3 @@
+#!/usr/bin/bash
+set -e
+scilab-cli -f hello-world.sce -quit

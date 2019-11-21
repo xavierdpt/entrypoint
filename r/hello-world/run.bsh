@@ -1,0 +1,3 @@
+#!/usr/bin/bash
+set -e
+R --no-save --silent --quiet <hello-world.r 

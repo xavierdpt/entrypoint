@@ -1,0 +1,11 @@
+#!/usr/bin/bash
+set -e
+
+if [ ! -e apache-jena-fuseki-3.13.1 ] ; then
+	if [ ! -e apache-jena-fuseki-3.13.1.tar.gz ] ; then
+		wget http://apache.osuosl.org/jena/binaries/apache-jena-fuseki-3.13.1.tar.gz
+	fi
+	tar xf apache-jena-fuseki-3.13.1.tar.gz
+fi
+cd apache-jena-fuseki-3.13.1
+./fuseki-server &
