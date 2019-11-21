@@ -1,6 +1,9 @@
 #!/usr/bin/bash
 set -e
-sudo apt-get install -y libx11-dev xinit blackbox virtualbox-guest-dkms virtualbox-guest-utils virtualbox-guest-x11
+sudo apt-get install -y blackbox 
+sudo apt-get install -y xinit
+sudo apt-get install -y xterm
+sudo apt-get install -y x11-xserver-utils
 sudo sed -i 's/allowed_users=console/allowed_users=anybody/' /etc/X11/Xwrapper.config
-echo "export DISPLAY=:0.0" >~/.bashrc
+echo "export DISPLAY=:0.0" >>~/.bashrc
 echo "You should exit the ssh session and restart the box with 'vagrant reload' to take advantage of guest tools + DISPLAY variable"
