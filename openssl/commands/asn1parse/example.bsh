@@ -1,0 +1,68 @@
+#!/usr/bin/bash
+
+set -e
+. ~/inside/interaction.bsh
+
+# TODO
+# -offset number
+# -length number
+# -i
+# -oid filename
+# -strparse offset
+# -genstr string
+# -genconf file
+# -strictpem
+# -item name
+
+message "This example is about the OpenSSL asn1parse command."
+message "Here's what you can do with this command."
+run "openssl asn1parse -help"
+
+message "First, we need some data to analyze. We can use other openssl commands to create it."
+
+if [ -e dhparams.der ] ; then
+	message "I see there's already a dhparams.der file, we'll use that"
+else
+	message "Let's create DH parameters in DER format."
+	run "openssl dhparam -2 -out dhparams.der -outform DER"
+fi
+
+if [ -e dhparams.pem ] ; then
+	message "I see there's already a dhparams.pem file, we'll use that"
+else
+	message "And also in PEM format."
+	run "openssl dhparam -2 -out dhparams.pem -outform PEM"
+fi
+
+message "Here's the content of dhparams.pem"
+run "openssl asn1parse -inform PEM <dhparams.pem"
+
+message "And here's the content of dhparams.der"
+run "openssl asn1parse -inform DER <dhparams.der "
+
+message "By the way, if you don't know, PEM files are plain text files, but DER files are raw binary"
+run "file dhparams.pem"
+run "cat dhparams.pem"
+run "file dhparams.der"
+
+message "The -in parameter is used to specify the input file, otherwise it reads from standard input."
+run "openssl asn1parse -in dhparams.pem -inform PEM"
+
+message "The -out parameter is used to specify a file to output DER data into. This can be used to convert PEM to DER."
+run "openssl asn1parse -in dhparams.pem -inform PEM -out dhparams.asn1"
+run "openssl asn1parse -in dhparams.asn1 -inform DER"
+
+message "If the -inform option is not specified, it assumes PEM, and fails with DER input."
+run "openssl asn1parse -in dhparams.pem"
+run "openssl asn1parse -in dhparams.der" || true
+
+message "The -noout option disable the description when converting to DER."
+run "openssl asn1parse -in dhparams.pem -out dhparams.asn1 -noout"
+run "openssl asn1parse -in dhparams.asn1 -inform DER"
+
+message "The -dump option dumps unkown data in hex. For this example, it does not show any difference."
+run "openssl asn1parse -in dhparams.pem -dump"
+
+message "The -dlimit option is like -dump, but truncate the output to the given number of bytes. For this example, it does not show any difference either."
+run "openssl asn1parse -in dhparams.pem -dlimit 5"
+

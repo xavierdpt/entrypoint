@@ -1,153 +1,65 @@
-Standard commands
--asn1parse
--ca
--ciphers
--cms
--crl
--crl2pkcs7
--dgst
--dhparam
--dsa
--dsaparam
--ec
--ecparam
--enc
--engine
--errstr
--gendsa
--genpkey
--genrsa
--help
--list
--nseq
--ocsp
--passwd
--pkcs12
--pkcs7
--pkcs8
--pkey
--pkeyparam
--pkeyutl
--prime
--rand
--rehash
--req
--rsa
--rsautl
--s_client
--s_server
--s_time
--sess_id
--smime
--speed
--spkac
--srp
--storeutl
--ts
--verify
--version
--x509
+OpenSSL is a cryptography toolkit implementing the Secure Sockets Layer (SSL v2/v3) and Transport Layer Security (TLS v1) network protocols and related cryptography standards required by them.
 
-Message Digest commands (see the `dgst' command for more details)
--blake2b512
--blake2s256
--gost
--md4
--md5
--rmd160
--sha1
--sha224
--sha256
--sha3-224
--sha3-256
--sha3-384
--sha3-512
--sha384
--sha512
--sha512-224
--sha512-256
--shake128
--shake256
--sm3
+```bash
+man openssl
+```
 
-Cipher commands (see the `enc' command for more details)
--aes-128-cbc
--aes-128-ecb
--aes-192-cbc
--aes-192-ecb
--aes-256-cbc
--aes-256-ecb
--aria-128-cbc
--aria-128-cfb
--aria-128-cfb1
--aria-128-cfb8
--aria-128-ctr
--aria-128-ecb
--aria-128-ofb
--aria-192-cbc
--aria-192-cfb
--aria-192-cfb1
--aria-192-cfb8
--aria-192-ctr
--aria-192-ecb
--aria-192-ofb
--aria-256-cbc
--aria-256-cfb
--aria-256-cfb1
--aria-256-cfb8
--aria-256-ctr
--aria-256-ecb
--aria-256-ofb
--base64
--bf
--bf-cbc
--bf-cfb
--bf-ecb
--bf-ofb
--camellia-128-cbc
--camellia-128-ecb
--camellia-192-cbc
--camellia-192-ecb
--camellia-256-cbc
--camellia-256-ecb
--cast
--cast-cbc
--cast5-cbc
--cast5-cfb
--cast5-ecb
--cast5-ofb
--des
--des-cbc
--des-cfb
--des-ecb
--des-ede
--des-ede-cbc
--des-ede-cfb
--des-ede-ofb
--des-ede3
--des-ede3-cbc
--des-ede3-cfb
--des-ede3-ofb
--des-ofb
--des3
--desx
--rc2
--rc2-40-cbc
--rc2-64-cbc
--rc2-cbc
--rc2-cfb
--rc2-ecb
--rc2-ofb
--rc4
--rc4-40
--seed
--seed-cbc
--seed-cfb
--seed-ecb
--seed-ofb
--sm4-cbc
--sm4-cfb
--sm4-ctr
--sm4-ecb
--sm4-ofb
+A summary of commands is available with the following command:
+```bash
+openssl help
+```
 
+OpenSSL commands include:
+
+* `asn1parse` (1 TODO)
+* `ca` (0)
+* `ciphers` (0)
+* `cms` (0)
+* `crl` (0)
+* `crl2pkcs7` (0)
+* `dgst` (0)
+* `dhparam` (0)
+* `dsa` (0)
+* `dsaparam` (0)
+* `ec` (0)
+* `ecparam` (0)
+* `enc` (0)
+* `engine` (0)
+* `errstr` (0)
+* `gendsa` (0)
+* `genpkey` (0)
+* `genrsa` (0)
+* `help` (0)
+* `list` (0)
+* `nseq` (0)
+* `ocsp` (0)
+* `passwd` (0)
+* `pkcs12` (0)
+* `pkcs7` (0)
+* `pkcs8` (0)
+* `pkey` (0)
+* `pkeyparam` (0)
+* `pkeyutl` (0)
+* `prime` (0)
+* `rand` (0)
+* `rehash` (0)
+* `req` (0)
+* `rsa` (0)
+* `rsautl` (0)
+* `s_client` (0)
+* `s_server` (0)
+* `s_time` (0)
+* `sess_id` (0)
+* `smime` (0)
+* `speed` (0)
+* `spkac` (0)
+* `srp` (0)
+* `storeutl` (0)
+* `ts` (0)
+* `verify` (0)
+* `version` (0)
+* `x509` (0)
+
+Examples for each commands are available in the `commands` folder.
+
+The number in regards to each command above reflect the number of times the examples have been work on. If not everything has been covered, it is flagged with "TODO".

@@ -1,0 +1,21 @@
+function message() {
+	MESSAGE="$1"
+	echo "${MESSAGE}"
+	read -p "[next]"
+}
+
+function run() {
+	CMD="$1"
+	echo "\$ $CMD"
+	read -p "[run]"
+	bash -c "$CMD"
+	read -p "[done]"
+}
+
+function runb() {
+	CMD="$1"
+	echo "\$ $CMD"
+	read -p "[run]"
+	$CMD
+	read -p "[done]"
+}
