@@ -1,0 +1,42 @@
+#!/usr/bin/bash
+
+set -e
+. ~/inside/interaction.bsh
+
+message "This script is about the OpenSSL 'list' command"
+
+message "Here's some documentation about this command."
+run "openssl list -help"
+
+message "Here are OpenSSL commands"
+run "openssl list -commands"
+
+message "Here are OpenSSL digest commands"
+run "openssl list -digest-commands"
+
+message "Here are OpenSSL cipher commands"
+run "openssl list -cipher-commands"
+
+message "Here are OpenSSL digest algorithms"
+run "openssl list -digest-algorithms"
+
+message "Here are OpenSSL cipher algorithms"
+run "openssl list -cipher-algorithms"
+
+message "Here are OpenSSL public key algorithms"
+run "openssl list -public-key-algorithms"
+
+message "Here are OpenSSL public key methods"
+run "openssl list -public-key-methods"
+
+message "Here are some disabled features"
+run "openssl list -disabled"
+
+message "There's also a mysterious thing about missing help."
+run "openssl list -missing-help"
+
+message "To get the information in single column, use -1."
+run "openssl list -1 -commands"
+
+message "Finally, list can also be use to list the options of other commands."
+run "openssl list -options list"

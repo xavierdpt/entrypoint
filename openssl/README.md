@@ -30,7 +30,7 @@ OpenSSL commands include:
 * `genpkey` (0)
 * `genrsa` (0)
 * `help` (0)
-* `list` (0)
+* `list` (1 DONE)
 * `nseq` (0)
 * `ocsp` (0)
 * `passwd` (0)
