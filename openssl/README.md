@@ -57,7 +57,7 @@ OpenSSL commands include:
 * `storeutl` (0)
 * `ts` (0)
 * `verify` (0)
-* `version` (0)
+* `version` (1 DONE)
 * `x509` (0)
 
 Examples for each commands are available in the `commands` folder.

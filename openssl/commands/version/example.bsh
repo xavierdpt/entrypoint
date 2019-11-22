@@ -1,0 +1,36 @@
+#!/usr/bin/bash
+
+set -e
+. ~/inside/interaction.bsh
+
+message "This script is about the OpenSSL 'version' command wich shows information about the OpenSSL installation."
+
+message "Here's some documentation about this command."
+run "openssl version -help"
+
+message "Version"
+run "openssl version -v"
+
+message "Build date"
+run "openssl version -b"
+
+message "Build platform"
+run "openssl version -p"
+
+message "Compiler flags"
+run "openssl version -f"
+
+message "Configuration directory"
+run "openssl version -d"
+
+message "Engines directory"
+run "openssl version -e"
+
+message "Internal datatype options"
+run "openssl version -o"
+
+message "Random seeding options"
+run "openssl version -r"
+
+message "All data"
+run "openssl version -a"
