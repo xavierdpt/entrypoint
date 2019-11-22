@@ -1,0 +1,49 @@
+#!/usr/bin/bash
+
+set -e
+. ~/inside/interaction.bsh
+
+message "This script is about the OpenSSL 'ecparam' command wich generates Elliptic Curve parameters"
+
+message "Here's some documentation about this command."
+run "openssl ecparam -help"
+
+message "Here are the available curves."
+run "openssl ecparam -list_curves"
+
+message "Let's generate a curve:"
+message "Option -genkey triggers curve generation"
+message "Option -name gets the name of the curve. Here, we use SM2 because it is short to type."
+message "Option -out specifies the output file. Defaults is standard output."
+message "Option -outform specifies the format, which can be PEM or DER. Defaults is PEM."
+run "openssl ecparam -genkey -name SM2 -out parameters.pem -outform PEM"
+run "cat parameters.pem"
+
+message "Here's how to convert to DER:"
+message "Option -in specifies the input file. Default is standard input."
+message "Option -inform specifies the input format (PEM or DER). Default is PEM."
+run "openssl ecparam -in parameters.pem -inform PEM -out parameters.der -outform DER"
+
+message "Here's how to get information on the key:"
+message "Option -text specifies to get human readable form."
+message "Option -noout disable the output of the encoded key."
+run "openssl ecparam -in parameters.pem -text -noout"
+
+message "Here's how to generate C code for the key:"
+message "Option -C outputs C code."
+run "openssl ecparam -in parameters.pem -C -noout -out parameters.c"
+run "cat parameters.c"
+
+message "Here's how to check the key:"
+message "Option -check checks the key."
+run "openssl ecparam -in parameters.pem -check -noout"
+
+
+# TODO
+# -no_seed            If 'explicit' parameters are chosen do not use the seed
+# -name val           Use the ec parameters with specified 'short name'
+# -conv_form val      Specifies the point conversion form 
+# -param_enc val      Specifies the way the ec parameters are encoded
+# -rand val           Load the file(s) into the random number generator
+# -writerand outfile  Write random data to the specified file
+# -engine val         Use engine, possibly a hardware device

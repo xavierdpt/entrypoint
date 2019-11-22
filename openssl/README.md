@@ -22,7 +22,7 @@ OpenSSL commands include:
 * `dsa` (0)
 * `dsaparam` (1 TODO)
 * `ec` (0)
-* `ecparam` (0)
+* `ecparam` (1 TODO)
 * `enc` (0)
 * `engine` (0)
 * `errstr` (0)
