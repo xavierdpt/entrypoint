@@ -1,0 +1,77 @@
+#!/usr/bin/bash
+
+set -e
+. ~/inside/interaction.bsh
+
+message "This script is about the OpenSSL 'x509' command wich is about x509 certificates."
+
+message "Here's some documentation about this command."
+run "openssl x509 -help"
+
+# -help                 Display this summary
+# -inform format        Input format - default PEM (one of DER or PEM)
+# -in infile            Input file - default stdin
+# -outform format       Output format - default PEM (one of DER or PEM)
+# -out outfile          Output file - default stdout
+# -keyform PEM|DER      Private key format - default PEM
+# -passin val           Private key password/pass-phrase source
+# -serial               Print serial number value
+# -subject_hash         Print subject hash value
+# -issuer_hash          Print issuer hash value
+# -hash                 Synonym for -subject_hash
+# -subject              Print subject DN
+# -issuer               Print issuer DN
+# -email                Print email address(es)
+# -startdate            Set notBefore field
+# -enddate              Set notAfter field
+# -purpose              Print out certificate purposes
+# -dates                Both Before and After dates
+# -modulus              Print the RSA key modulus
+# -pubkey               Output the public key
+# -fingerprint          Print the certificate fingerprint
+# -alias                Output certificate alias
+# -noout                No output, just status
+# -nocert               No certificate output
+# -ocspid               Print OCSP hash values for the subject name and public key
+# -ocsp_uri             Print OCSP Responder URL(s)
+# -trustout             Output a trusted certificate
+# -clrtrust             Clear all trusted purposes
+# -clrext               Clear all certificate extensions
+# -addtrust val         Trust certificate for a given purpose
+# -addreject val        Reject certificate for a given purpose
+# -setalias val         Set certificate alias
+# -days int             How long till expiry of a signed certificate - def 30 days
+# -checkend intmax      Check whether the cert expires in the next arg seconds
+#                       Exit 1 if so, 0 if not
+# -signkey infile       Self sign cert with arg
+# -x509toreq            Output a certification request object
+# -req                  Input is a certificate request, sign and output
+# -CA infile            Set the CA certificate, must be PEM format
+# -CAkey val            The CA key, must be PEM format; if not in CAfile
+# -CAcreateserial       Create serial number file if it does not exist
+# -CAserial val         Serial file
+# -set_serial val       Serial number to use
+# -text                 Print the certificate in text form
+# -ext val              Print various X509V3 extensions
+# -C                    Print out C code forms
+# -extfile infile       File with X509V3 extensions to add
+# -rand val             Load the file(s) into the random number generator
+# -writerand outfile    Write random data to the specified file
+# -extensions val       Section from config file to use
+# -nameopt val          Various certificate name options
+# -certopt val          Various certificate text options
+# -checkhost val        Check certificate matches host
+# -checkemail val       Check certificate matches email
+# -checkip val          Check certificate matches ipaddr
+# -CAform PEM|DER       CA format - default PEM
+# -CAkeyform format     CA key format - default PEM
+# -sigopt val           Signature parameter in n:v form
+# -force_pubkey infile  Force the Key to put inside certificate
+# -next_serial          Increment current certificate serial number
+# -clrreject            Clears all the prohibited or rejected uses of the certificate
+# -badsig               Corrupt last byte of certificate signature (for test)
+# -*                    Any supported digest
+# -subject_hash_old     Print old-style (MD5) issuer hash value
+# -issuer_hash_old      Print old-style (MD5) subject hash value
+# -engine val           Use engine, possibly a hardware device
+# -preserve_dates       preserve existing dates when signing

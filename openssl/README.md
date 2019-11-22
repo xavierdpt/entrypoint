@@ -43,7 +43,7 @@ OpenSSL commands include:
 * `prime` (1 DONE)
 * `rand` (1 TODO)
 * `rehash` (0)
-* `req` (0)
+* `req` (0.1 STARTED)
 * `rsa` (1 TODO)
 * `rsautl` (0)
 * `s_client` (0)
