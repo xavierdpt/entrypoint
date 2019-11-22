@@ -1,0 +1,40 @@
+#!/usr/bin/bash
+
+set -e
+. ~/inside/interaction.bsh
+
+message "This script is about the OpenSSL 'genrsa' command wich generates RSA keys."
+
+message "Here's some documentation about this command."
+run "openssl genrsa -help"
+
+message "With no arguments, it generates a PEM key to standard output."
+run "openssl genrsa"
+
+message "Last argument is the key size."
+run "openssl genrsa 512"
+
+message "Option -3 sets the value of E to 3."
+run "openssl genrsa -3 512"
+
+message "Option -f4 (or -F4) sets the value of 65537."
+run "openssl genrsa -f4 512"
+run "openssl genrsa -F4 512"
+
+message "Option -out specifies the output file."
+run "openssl genrsa -out key.pem"
+
+message "Option -prime specifies the number of primes. It is constrained by the key size, but for 4096 bits, 4 primes work."
+run "openssl genrsa -out key.pem -primes 4 4096"
+
+message "Option -passout specifies the password source. This is documented in more details elsewhere, but here's an example:"
+run "openssl genrsa -passout pass:mypassword -out key.pem"
+
+message "Output can be encrypted by specifying a cipher:"
+run "openssl genrsa -SM4-CBC -out key.pem"
+
+
+# -rand val           Load the file(s) into the random number generator
+# -writerand outfile  Write random data to the specified file
+# -engine val         Use engine, possibly a hardware device
+# TODO: Illustrate the consequences of using passout or a cipher

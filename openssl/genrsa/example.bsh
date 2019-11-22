@@ -1,2 +1,0 @@
-#!/usr/bin/bash
-openssl genrsa -out private_key 

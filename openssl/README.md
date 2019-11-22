@@ -28,7 +28,7 @@ OpenSSL commands include:
 * `errstr` (0)
 * `gendsa` (0)
 * `genpkey` (0)
-* `genrsa` (0)
+* `genrsa` (1 TODO)
 * `help` (0)
 * `list` (1 DONE)
 * `nseq` (0)
