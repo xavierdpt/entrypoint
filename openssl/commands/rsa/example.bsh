@@ -1,0 +1,45 @@
+#!/usr/bin/bash
+
+set -e
+. ~/inside/interaction.bsh
+
+message "This script is about the OpenSSL 'rsa' command wich operates on RSA keys."
+
+message "Here's some documentation about this command."
+run "openssl rsa -help"
+
+message "We need to generate an RSA key. See the examples about the 'genrsa' command for more information."
+run "openssl genrsa -out private_key.pem"
+run "cat private_key.pem"
+
+message "Option -in specifies to read from the supplied file. Default is standard input."
+message "Option -inform specifies the input format (PEM, DER, PVK). Default is PEM."
+message "Option -text shows human readable output."
+message "Option -noout discards the encoded key."
+run "openssl rsa -in private_key.pem -inform PEM -text -noout"
+
+message "Option -modulus shows the modulus."
+run "openssl rsa -in private_key.pem -modulus -noout"
+
+message "Option -check checks the key."
+run "openssl rsa -in private_key.pem -check -noout"
+
+message "Option -pubout specifies to output a public key."
+message "Option -out specifies to output to the supplied file. Default is standard output."
+message "Option -outform specifies the output format (PEM, DER, PVK). Default is PEM."
+run "openssl rsa -in private_key.pem -pubout -out public_key.pem -outform PEM"
+run "cat public_key.pem"
+
+message "Option -pubin specifies to expect a public key in input."
+run "openssl rsa -pubin -in public_key.pem -text -noout"
+
+# -passout val       Output file pass phrase source
+# -passin val        Input file pass phrase source
+# -RSAPublicKey_in   Input is an RSAPublicKey
+# -RSAPublicKey_out  Output is an RSAPublicKey
+# -*                 Any supported cipher
+# -pvk-strong        Enable 'Strong' PVK encoding level (default)
+# -pvk-weak          Enable 'Weak' PVK encoding level
+# -pvk-none          Don't enforce PVK encoding
+# -engine val        Use engine, possibly a hardware device
+

@@ -44,7 +44,7 @@ OpenSSL commands include:
 * `rand` (1 TODO)
 * `rehash` (0)
 * `req` (0)
-* `rsa` (0)
+* `rsa` (1 TODO)
 * `rsautl` (0)
 * `s_client` (0)
 * `s_server` (0)
