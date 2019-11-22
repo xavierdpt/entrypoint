@@ -1,0 +1,27 @@
+#!/usr/bin/bash
+
+set -e
+. ~/inside/interaction.bsh
+
+message "This script is about the OpenSSL 'dsa' command wich generates DSA keys."
+
+message "Here's some documentation about this command."
+run "openssl dsa -help"
+
+# TODO
+# -inform format   Input format, DER PEM PVK
+# -outform format  Output format, DER PEM PVK
+# -in val          Input key
+# -out outfile     Output file
+# -noout           Don't print key out
+# -text            Print the key in text
+# -modulus         Print the DSA public value
+# -pubin           Expect a public key in input file
+# -pubout          Output public key, not private
+# -passin val      Input file pass phrase source
+# -passout val     Output file pass phrase source
+# -*               Any supported cipher
+# -pvk-strong      Enable 'Strong' PVK encoding level (default)
+# -pvk-weak        Enable 'Weak' PVK encoding level
+# -pvk-none        Don't enforce PVK encoding
+# -engine val      Use engine e, possibly a hardware device

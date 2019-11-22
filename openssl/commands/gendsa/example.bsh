@@ -1,0 +1,34 @@
+#!/usr/bin/bash
+
+# TODO
+# -rand val           Load the file(s) into the random number generator
+# -writerand outfile  Write random data to the specified file
+# -engine val         Use engine, possibly a hardware device
+# Illustrate the consequences of using a cipher and a password.
+# Find the supported ciphers
+
+set -e
+. ~/inside/interaction.bsh
+
+message "This script is about the OpenSSL 'gendsa' command wich generates DSA keys"
+
+message "Here's some documentation about this command."
+run "openssl gendsa -help"
+
+message "We need to generate DSA parameters first. See the examples about the 'dsaparam' command for more information."
+run "openssl dsaparam -genkey -out parameters.pem 512"
+run "cat parameters.pem"
+
+message "Then we can generate a DSA private key with those parameters."
+message "Option -out specifies the output file. Default is standard output."
+run "openssl gendsa -out private_key.pem parameters.pem"
+run "cat private_key.pem"
+
+message "Option -passout specifies the password. Documentation of this option is available somewhere else."
+run "openssl gendsa -passout pass:mypassword -out private_key.pem parameters.pem"
+run "cat private_key.pem"
+
+message "The key can be encrypted with any cipher. See the examples about the 'list' command for a list of available ciphers."
+run "openssl gendsa -SM4-CBC -passout pass:mypassword -out private_key.pem parameters.pem"
+run "cat private_key.pem"
+

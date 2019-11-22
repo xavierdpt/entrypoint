@@ -1,2 +1,2 @@
 #!/usr/bin/bash
-man dsa
+man openssl-dsa
