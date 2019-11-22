@@ -8,16 +8,34 @@ message "This script is about the OpenSSL 'dsa' command wich generates DSA keys.
 message "Here's some documentation about this command."
 run "openssl dsa -help"
 
+message "We need a DSA key first. See the examples about the 'gendsa' command for more information."
+run "openssl dsaparam -genkey -out parameters.pem 512"
+run "openssl gendsa -out private_key.pem parameters.pem"
+run "cat parameters.pem"
+
+message "Option -in specifies the input file. Default is standard input."
+message "Option -inform specifies the input format (PEM, DER, PVK). Default is PEM, but we include the option here for demonstration purposes."
+run "openssl dsa -in private_key.pem -inform PEM"
+
+message "Option -text specifies to generate human readable input."
+message "Option -noout specifies to discard the encoded key from the output."
+run "openssl dsa -in private_key.pem -text -noout"
+
+message "Option -modulus specifies to show the modulus."
+run "openssl dsa -in private_key.pem -modulus -noout"
+
+message "Option -pubout can be used to convert the private key to a public key."
+message "Option -out specifies the output file. Default is standard output."
+message "Option -outform specifies the output format (PEM, DER, PVK). Default is PEM."
+run "openssl dsa -in private_key.pem -pubout -out public_key.pem -outform PEM"
+
+message "Option -pubin can be used to get information on the public key."
+run "openssl dsa -pubin -in public_key.pem -text -noout"
+
+message "Conversion to DER only requires to set the outform"
+run "openssl dsa -in private_key.pem -out private_key.der -outform DER"
+
 # TODO
-# -inform format   Input format, DER PEM PVK
-# -outform format  Output format, DER PEM PVK
-# -in val          Input key
-# -out outfile     Output file
-# -noout           Don't print key out
-# -text            Print the key in text
-# -modulus         Print the DSA public value
-# -pubin           Expect a public key in input file
-# -pubout          Output public key, not private
 # -passin val      Input file pass phrase source
 # -passout val     Output file pass phrase source
 # -*               Any supported cipher

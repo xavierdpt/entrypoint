@@ -19,7 +19,7 @@ OpenSSL commands include:
 * `crl2pkcs7` (0)
 * `dgst` (0)
 * `dhparam` (1 TODO)
-* `dsa` (0)
+* `dsa` (1 TODO)
 * `dsaparam` (1 TODO)
 * `ec` (0)
 * `ecparam` (1 TODO)
