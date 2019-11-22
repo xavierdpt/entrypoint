@@ -29,7 +29,7 @@ OpenSSL commands include:
 * `gendsa` (1 TODO)
 * `genpkey` (0)
 * `genrsa` (1 TODO)
-* `help` (0)
+* `help` (1 DONE)
 * `list` (1 DONE)
 * `nseq` (0)
 * `ocsp` (0)

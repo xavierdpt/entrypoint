@@ -1,0 +1,16 @@
+#!/usr/bin/bash
+
+set -e
+. ~/inside/interaction.bsh
+
+message "This script is about the OpenSSL 'help' command wich generates help."
+
+message "Here's some documentation about this command."
+run "openssl help -help"
+
+message "With no arguments, it shows the available commands, ciphers and digests."
+run "openssl help"
+
+message "With a command, it shows information about that command."
+run "openssl help help"
+
