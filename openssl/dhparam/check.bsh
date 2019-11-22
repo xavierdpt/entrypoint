@@ -1,3 +1,0 @@
-#!/usr/bin/bash
-openssl dhparam -2 -out params
-openssl dhparam -check -in params

@@ -1,2 +1,0 @@
-#!/usr/bin/bash
-openssl dhparam -2 -outform PEM -out params.pem

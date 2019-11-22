@@ -1,0 +1,36 @@
+#!/usr/bin/bash
+
+set -e
+. ~/inside/interaction.bsh
+
+message "This script is about the OpenSSL 'dsaparam' command wich generates DSA parameters"
+
+message "Here's some documentation about this command."
+run "openssl dsaparam -help"
+
+message "Let's generate some parameters."
+message "Option -genkey specifies to generate parameters."
+message "Option -out specifies the destination, otherwise standard output is used."
+message "Last argument is the size, which is mandatory."
+run "openssl dsaparam -genkey -out parameters.pem 256"
+run "cat parameters.pem"
+
+message "We can convert them to DER by reading them and changing the format."
+message "Option -in specifies the input source. Default is standard input."
+message "Option -inform specifies the input format. Default is PEM."
+message "Option -outform specifies the output format. Default is PEM."
+run "openssl dsaparam -in parameters.pem -inform PEM -out parameters.der -outform DER"
+
+message "Option -text shows the parameter in human readable form."
+message "Option -noout disable the ouput of the encoded form."
+run "openssl dsaparam -in parameters.pem -text -noout"
+
+message "Option -C generates C code. It's best to store it in a C source file and disable the output of the encoded form which is not valid C code."
+message "Option -out does not output the code, use the shell redirection for that."
+run "openssl dsaparam -in parameters.pem -C -noout >parameters.c"
+run "cat parameters.c"
+
+# TODO
+# -rand val           Load the file(s) into the random number generator
+# -writerand outfile  Write random data to the specified file
+# -engine val         Use engine e, possibly a hardware device

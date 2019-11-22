@@ -1,2 +1,0 @@
-#!/usr/bin/bash
-openssl dhparam -5 -text

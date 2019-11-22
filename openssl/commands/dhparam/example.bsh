@@ -1,0 +1,55 @@
+#!/usr/bin/bash
+
+set -e
+. ~/inside/interaction.bsh
+
+message "This script is about the OpenSSL 'dhparam' command wich generates DH parameters"
+
+message "Here's some documentation about this command."
+run "openssl dhparam -help"
+
+message "Option -2 generates parameters with '2' has the generator value"
+message "Option -out specifies the destination, otherwise standard output is used."
+message "Option -outform specifies the output format, otherwise PEM is used."
+message "The last argument specifies the number of bytes. We use small values to be fast. Default is 2048."
+run "openssl dhparam -2 -out parameters.pem -outform PEM 256"
+
+message "The generator value can also be '5' and the output format can be DER."
+run "openssl dhparam -5 -out parameters.der -outform DER 256"
+
+message "The generated parameters can be inspected with -text."
+message "Option -noout suppresses the output of the encoded version of the parameters."
+run "openssl dhparam -text -noout -in parameters.pem"
+
+message "As usual in OpenSSL, DER format must be specified explicitely with -inform, otherwise it fails."
+run "openssl dhparam -text -noout -in parameters.der" || true
+run "openssl dhparam -text -noout -in parameters.der -inform DER"
+
+message "Option -check allows to check the parameters."
+run "openssl dhparam -check -noout -in parameters.pem"
+
+message "Option -C generates C code. It is best to combine with option with -noout, and use -out to specify a C file to store the code in."
+run "openssl dhparam -in parameters.pem -C -noout -out parameters.c"
+run "cat parameters.c"
+
+message "Option -dsaparam generates DSA parameters and convert them to DH parameters. Size is mandatory in this case."
+run "openssl dhparam -dsaparam 256"
+
+message "With no argument, the command expects PEM parameters in standard input, and sends them to standard output."
+run "openssl dhparam <parameters.pem"
+
+message "This can be used to convert PEM to DER, and DER to PEM."
+run "openssl dhparam -in parameters.pem -out parameters.der -outform DER"
+run "openssl dhparam -in parameters.der -inform DER -out parameters.pem"
+
+message "Exercise: How would you find out what's the default generator used when no generator are specified ?"
+run "openssl dhparam -text -noout 256 2>/dev/null"
+message "Answer: defaut generator is 2"
+message "As a bonus, we showed how to suppress progress output."
+message "The End."
+
+# TODO
+# -rand val           Load the file(s) into the random number generator
+# -writerand outfile  Write random data to the specified file
+# -engine val         Use engine e, possibly a hardware device
+# Generate and convert DSA parameters to DH.
