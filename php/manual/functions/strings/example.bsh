@@ -1,0 +1,57 @@
+#!/usr/bin/bash
+
+set -e
+. ~/inside/interaction.bsh
+
+message "This example is about PHP string functions."
+message "PHP string functions are documented here: https://www.php.net/manual/en/book.strings.php"
+
+message "To add backslashes to a string to escape some characters, use the addcslashes function."
+message "Note that it is almost always better to include the backslash character in the list so that the operation can be reversed for all inputs."
+run "cat programs/addcslashes.1.php"
+run "php programs/addcslashes.1.php"
+
+message "To escape quotes, double quotes, backslashes and nul characters, use the addslashes function."
+run "cat programs/addslashes.1.php"
+run "php programs/addslashes.1.php"
+
+message "To remove spaces, tabs, new lines, carriage returns, null characters and vertical tabs from the end of a string, use the chop function"
+run "cat programs/chop.1.php"
+run "php programs/chop.1.php"
+
+message "The second argument of chop specifies the characters to trim."
+run "cat programs/chop.2.php"
+run "php programs/chop.2.php"
+
+message "To convert a string to hexadecimal, use the bin2hex function."
+run "cat programs/bin2hex.php"
+run "php programs/bin2hex.php"
+
+message "To reverse a string, use the strrev function."
+run "cat programs/strrev.php"
+run "php programs/strrev.php"
+
+
+message "To compute the crc32 of a string, use the crc32 function."
+run "cat programs/crc32.php"
+run "php programs/crc32.php"
+
+message "To change the first letter of a string to lower case, use the lcfirst function."
+run "cat programs/lcfirst.php"
+run "php programs/lcfirst.php"
+
+message "To compute the soundex of a string, use the soundex function."
+run "cat programs/soundex.php"
+run "php programs/soundex.php"
+
+message "To compute the rot13 of a string, use the str_rot13 function."
+run "cat programs/str_rot13.php"
+run "php programs/str_rot13.php"
+
+message "To convert a string to lowercase, use the strtolower function."
+run "cat programs/strtolower.php"
+run "php programs/strtolower.php"
+
+message "To convert a string to uppercase, use the strtoupper function."
+run "cat programs/strtoupper.php"
+run "php programs/strtoupper.php"

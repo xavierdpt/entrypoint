@@ -8,7 +8,7 @@ message "This script is about the OpenSSL 'dhparam' command wich generates DH pa
 message "Here's some documentation about this command."
 run "openssl dhparam -help"
 
-message "Option -2 generates parameters with '2' has the generator value"
+message "Option -2 generates parameters with '2' as the generator value"
 message "Option -out specifies the destination, otherwise standard output is used."
 message "Option -outform specifies the output format, otherwise PEM is used."
 message "The last argument specifies the number of bytes. We use small values to be fast. Default is 2048."

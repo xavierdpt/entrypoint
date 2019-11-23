@@ -1,21 +1,25 @@
+BLUE='[01;34m'
+GREEN='[01;32m'
+RESET='[0m'
+
 function message() {
 	MESSAGE="$1"
-	echo "${MESSAGE}"
-	read -p "[next]"
+	echo "${BLUE}${MESSAGE}${RESET}"
+	read -p "${GREEN}[next]${RESET}"
 }
 
 function run() {
 	CMD="$1"
 	echo "\$ $CMD"
-	read -p "[run]"
+	read -p "${GREEN}[run]${RESET}"
 	bash -c "$CMD"
-	read -p "[done]"
+	read -p "${GREEN}[done]${RESET}"
 }
 
 function runb() {
 	CMD="$1"
 	echo "\$ $CMD"
-	read -p "[run]"
+	read -p "${GREEN}[run]${RESET}"
 	$CMD
-	read -p "[done]"
+	read -p "${GREEN}[done]${RESET}"
 }
