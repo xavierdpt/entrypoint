@@ -1,1 +1,13 @@
+/cni-plugins-linux-amd64-v0.8.2.tgz
+/containerd-1.2.9.linux-amd64.tar.gz
+/coredns.yaml
+/crictl-v1.15.0-linux-amd64.tar.gz
+/etcd-v3.4.0-linux-amd64/
+/etcd-v3.4.0-linux-amd64.tar.gz
+/kube-apiserver
+/kube-controller-manager
 /kubectl
+/kubelet
+/kube-proxy
+/kube-scheduler
+/runc.amd64

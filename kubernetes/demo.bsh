@@ -1,0 +1,78 @@
+#!/usr/bin/bash
+set -e
+
+sudo apt-get -y install socat conntrack ipset
+
+if [ ! -e kubectl ] ; then
+	wget "https://storage.googleapis.com/kubernetes-release/release/v1.15.3/bin/linux/amd64/kubectl"
+	chmod +x kubectl
+fi
+
+if [ ! -e etcd-v3.4.0-linux-amd64.tar.gz ] ; then
+	wget "https://github.com/etcd-io/etcd/releases/download/v3.4.0/etcd-v3.4.0-linux-amd64.tar.gz"
+fi
+
+if [ ! -e etcd-v3.4.0-linux-amd64 ] ; then
+	tar xf etcd-v3.4.0-linux-amd64.tar.gz
+fi
+
+if [ ! -e kube-apiserver ] ; then
+	wget "https://storage.googleapis.com/kubernetes-release/release/v1.15.3/bin/linux/amd64/kube-apiserver"
+fi
+
+if [ ! -e kube-controller-manager ] ; then
+	wget "https://storage.googleapis.com/kubernetes-release/release/v1.15.3/bin/linux/amd64/kube-controller-manager"
+fi
+
+if [ ! -e kube-scheduler ] ; then
+	wget "https://storage.googleapis.com/kubernetes-release/release/v1.15.3/bin/linux/amd64/kube-scheduler"
+fi
+
+if [ ! -e crictl-v1.15.0-linux-amd64.tar.gz ] ; then
+	wget "https://github.com/kubernetes-sigs/cri-tools/releases/download/v1.15.0/crictl-v1.15.0-linux-amd64.tar.gz"
+fi
+
+if [ ! -e runc.amd64 ] ; then
+	wget "https://github.com/opencontainers/runc/releases/download/v1.0.0-rc8/runc.amd64"
+fi
+
+if [ ! -e cni-plugins-linux-amd64-v0.8.2.tgz ] ; then
+	wget "https://github.com/containernetworking/plugins/releases/download/v0.8.2/cni-plugins-linux-amd64-v0.8.2.tgz"
+fi
+
+if [ ! -e containerd-1.2.9.linux-amd64.tar.gz ] ; then
+	wget "https://github.com/containerd/containerd/releases/download/v1.2.9/containerd-1.2.9.linux-amd64.tar.gz"
+fi
+
+if [ ! -e kube-proxy ] ; then
+	wget "https://storage.googleapis.com/kubernetes-release/release/v1.15.3/bin/linux/amd64/kube-proxy"
+fi
+
+if [ ! -e kubelet ] ; then
+	wget "https://storage.googleapis.com/kubernetes-release/release/v1.15.3/bin/linux/amd64/kubelet"
+fi
+
+cat <<EOF | sudo tee /etc/systemd/system/kube-proxy.service
+[Unit]
+Description=Kubernetes Kube Proxy
+Documentation=https://github.com/kubernetes/kubernetes
+
+[Service]
+ExecStart=$PWD/kube-proxy --config=$PWD/kube-proxy-config.yaml
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target
+EOF
+
+sudo systemctl daemon-reload
+sudo systemctl enable containerd kubelet kube-proxy
+sudo systemctl start containerd kubelet kube-proxy
+
+./kubectl get nodes
+
+./kubectl apply -f coredns.yaml
+
+./kubectl create deployment nginx --image=nginx
+
