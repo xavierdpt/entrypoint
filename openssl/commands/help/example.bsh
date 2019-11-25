@@ -3,6 +3,8 @@
 set -e
 . ~/inside/interaction.bsh
 
+message "Welcome to OpenSSL. If you're reading in the suggested order, this should be the first example you're looking at."
+
 message "This script is about the OpenSSL 'help' command wich generates help."
 
 message "Here's some documentation about this command."
@@ -14,3 +16,13 @@ run "openssl help"
 message "With a command, it shows information about that command."
 run "openssl help help"
 
+message "OpenSSL also comes with a set of manpages, which are named with 'openssl-' prefixed to the command name."
+message "Unfortunately, there is no dedicated manpage for the help command, but there is one for the list command."
+run "man openssl-list"
+
+message "There's also a master manpage for openssl as a whole."
+run "man openssl"
+
+message "Note that the documentation generated with the -help option of each command is often less detailed than the man page, but may include options which are not covered in the manpages for the command. So the two sources of documentation are complementary."
+
+message "The End."

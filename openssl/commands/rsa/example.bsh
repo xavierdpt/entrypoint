@@ -9,37 +9,43 @@ message "Here's some documentation about this command."
 run "openssl rsa -help"
 
 message "We need to generate an RSA key. See the examples about the 'genrsa' command for more information."
-run "openssl genrsa -out private_key.pem"
+run "openssl genrsa -out private_key.pem 512"
 run "cat private_key.pem"
 
-message "Option -in specifies to read from the supplied file. Default is standard input."
-message "Option -inform specifies the input format (PEM, DER, PVK). Default is PEM."
-message "Option -text shows human readable output."
-message "Option -noout discards the encoded key."
-run "openssl rsa -in private_key.pem -inform PEM -text -noout"
+message "The rsa commands allows to display an rsa key in human readable form with the -text option."
+run "openssl rsa -in private_key.pem -text"
 
-message "Option -modulus shows the modulus."
-run "openssl rsa -in private_key.pem -modulus -noout"
+message "Notice that the encoded information was displayed on the screen. To hide it, use -noout."
+run "openssl rsa -in private_key.pem -noout -text"
 
-message "Option -check checks the key."
-run "openssl rsa -in private_key.pem -check -noout"
+message "You can also ask for the modulus with -modulus."
+run "openssl rsa -in private_key.pem -noout -modulus"
 
-message "Option -pubout specifies to output a public key."
-message "Option -out specifies to output to the supplied file. Default is standard output."
-message "Option -outform specifies the output format (PEM, DER, PVK). Default is PEM."
-run "openssl rsa -in private_key.pem -pubout -out public_key.pem -outform PEM"
+message "And you can check the key with -check."
+run "openssl rsa -in private_key.pem -noout -check"
+
+message "You can turn the private key into a public key with -pubout"
+run "openssl rsa -in private_key.pem -pubout -out public_key.pem"
 run "cat public_key.pem"
 
-message "Option -pubin specifies to expect a public key in input."
+message "To have information about a public key, you must use -pubin"
 run "openssl rsa -pubin -in public_key.pem -text -noout"
+run "openssl rsa -pubin -in public_key.pem -modulus -noout"
 
-# -passout val       Output file pass phrase source
-# -passin val        Input file pass phrase source
-# -RSAPublicKey_in   Input is an RSAPublicKey
-# -RSAPublicKey_out  Output is an RSAPublicKey
-# -*                 Any supported cipher
-# -pvk-strong        Enable 'Strong' PVK encoding level (default)
-# -pvk-weak          Enable 'Weak' PVK encoding level
-# -pvk-none          Don't enforce PVK encoding
-# -engine val        Use engine, possibly a hardware device
+message "It possible to add encryption to an unencrypted private key by specifying the cipher."
+message "If the password is not provided on the command line, openssl will ask for it."
+run "openssl rsa -in private_key.pem -out protected_private_key.pem -aes128 -passout pass:mypassword"
+run "cat protected_private_key.pem"
 
+message "Note: The list of supported ciphers is available in the man page; cipher -idea does not work."
+run "man openssl-rsa | grep '^\s*-aes128'"
+
+message "Now, to get information on the private key, it is necessary to know the password."
+message "If the password is not provided on the command line, openssl will ask for it."
+run "openssl rsa -in protected_private_key.pem -text -noout -passin pass:mypassword"
+
+message "To remove the password from a protected private key, don't specify a cipher."
+run "openssl rsa -in protected_private_key.pem -out unprotected_private_key.pem -passin pass:mypassword"
+run "cat unprotected_private_key.pem"
+
+message "The End."

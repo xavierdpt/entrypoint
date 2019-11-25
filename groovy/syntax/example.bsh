@@ -1,0 +1,40 @@
+#!/usr/bin/bash
+
+set -e
+. ~/inside/interaction.bsh
+
+if false ; then
+message "This example is about basic Groovy syntax."
+message "It's main purpose is to illustrate some of the syntax constructs of the Groovy language."
+message "For boring details such as how to add comments or the precise syntax of identifiers, refer to the documentation."
+message "http://groovy-lang.org/syntax.html"
+
+
+message "Let's start with the classic hello world."
+run "cat programs/program001.groovy"
+run "groovy programs/program001.groovy" 
+message "The big warnings appear because of changes between Java 8 and Java 9, it should hopefully disappear in the future."
+
+message "Let's define a variable and print it."
+run "cat programs/program002.groovy"
+run "groovy programs/program002.groovy" 
+
+message "Something very convenient is string interpolation."
+run "cat programs/program003.groovy"
+run "groovy programs/program003.groovy" 
+
+message "To disable string interpolation, use single quotes."
+run "cat programs/program004.groovy"
+run "groovy programs/program004.groovy" 
+
+message "String concatenation is similar to Java."
+run "cat programs/program005.groovy"
+run "groovy programs/program005.groovy" 
+fi
+
+message "String interpolation accept sequence of statements, but it quickly becomes ugly."
+run "cat programs/program006.groovy"
+run "groovy programs/program006.groovy" 
+
+# TODO : maps, [:], quoted identifiers, keywords after dot
+# TODO : 'x' "x" '''x''' """x""" /x/ $/x/$

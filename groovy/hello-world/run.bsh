@@ -1,0 +1,2 @@
+#!/usr/bin/bash
+groovy hello-world.groovy 2>/dev/null

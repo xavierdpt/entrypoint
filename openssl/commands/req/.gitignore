@@ -1,3 +1,4 @@
-/privkey.pem
 /certificate.pem
-/key.pem
+/certificate_request.pem
+/private_key.pem
+/public_key.pem

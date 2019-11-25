@@ -1,0 +1,31 @@
+#!/usr/bin/bash
+
+set -e
+. ~/inside/interaction.bsh
+
+message "This script is about the -primes argument of the OpenSSL 'genrsa' command wich generates RSA keys."
+message "The number of primes is dependent on the key size"
+message "We show which number of primes work for key sizes 512, 1024, 2048, 4096"
+
+message "512 bits"
+run "openssl genrsa -primes 2 512"
+run "openssl genrsa -primes 3 512" || true
+
+message "1024 bits"
+run "openssl genrsa -primes 2 1024"
+run "openssl genrsa -primes 3 1024"
+run "openssl genrsa -primes 4 1024" || true
+
+message "2048 bits"
+run "openssl genrsa -primes 2 2048"
+run "openssl genrsa -primes 3 2048"
+run "openssl genrsa -primes 4 2048" || true
+
+message "4096 bits"
+run "openssl genrsa -primes 2 4096"
+run "openssl genrsa -primes 3 4096"
+run "openssl genrsa -primes 4 4096"
+run "openssl genrsa -primes 5 4096" || true
+
+
+message "The End."

@@ -9,95 +9,29 @@ A summary of commands is available with the following command:
 openssl help
 ```
 
-OpenSSL and their options are listed belows, with the examples in which they are most proeminently covered. They are ordered in suggested studying order.
+OpenSSL and their options are listed belows, with the examples in which they are most proeminently covered. They are ordered in suggested reading order.
 
 * `help`
-    * `-help  Display this summary`
+    * commands/help/example.bsh: `-help`
 * `list`
-    * `-help`
-    * `-1`
-    * `-commands`
-    * `-digest-commands`
-    * `-digest-algorithms`
-    * `-cipher-commands`
-    * `-cipher-algorithms`
-    * `-public-key-algorithms`
-    * `-public-key-methods`
-    * `-disabled`
-    * `-missing-help`
-    * `-options`
+    * commands/list/example.bsh: `-help`, `-1`, `-commands`, `-digest-commands`, `-digest-algorithms`, `-cipher-commands`, `-cipher-algorithms`, `-public-key-algorithms`, `-public-key-methods`, `-disabled`, `-missing-help`, `-options`
 * `version`
-    * `-help`
-    * `-a`
-    * `-b`
-    * `-d`
-    * `-e`
-    * `-f`
-    * `-o`
-    * `-p`
-    * `-r`
-    * `-v`
+    * commands/version/example.bsh: `-help`, `-a`, `-b`, `-d`, `-e`, `-f`, `-o`, `-p`, `-r`, `-v`
 * `errstr`
-    * `-help`
+    * commands/errstr/example.bsh: `-help`
 * `prime`
-    * `-help`
-    * `-hex`
-    * `-generate`
-    * `-bits`
-    * `-safe`
-    * `-checks`
+    * commands/prime/example.bsh: `-help`, `-hex`, `-generate`, `-bits`, `-safe`, `-checks`
 * `rand`
-    * `-help`
-    * `-out`
-    * `-base64`
-    * `-hex`
-    * `-rand`
-    * `-writerand`
-    * `-engine`
+    * commands/rand/example.bsh: `-help`, `-out`, `-base64`, `-hex`
+    * TODO: `-rand`, `-writerand`, `-engine`
 * `genrsa`
-    * `-help`: commands/genrsa/example.bsh
-    * `-3`: commands/genrsa/example.bsh
-    * `-F4`: commands/genrsa/example.bsh
-    * `-f4`: commands/genrsa/example.bsh
-    * `-out`: commands/genrsa/example.bsh
-    * `-primes`: commands/genrsa/primes.bsh
-    * `-passout`: commands/genrsa/ciphers.bsh
-    * `-aes128`: commands/genrsa/ciphers.bsh
-    * `-aes192`: commands/genrsa/ciphers.bsh
-    * `-aes256`: commands/genrsa/ciphers.bsh
-    * `-aria128`: commands/genrsa/ciphers.bsh
-    * `-aria192`: commands/genrsa/ciphers.bsh
-    * `-aria256`: commands/genrsa/ciphers.bsh
-    * `-camellia128`: commands/genrsa/ciphers.bsh
-    * `-camellia192`: commands/genrsa/ciphers.bsh
-    * `-camellia256`: commands/genrsa/ciphers.bsh
-    * `-des`: commands/genrsa/ciphers.bsh
-    * `-des3`: commands/genrsa/ciphers.bsh
-    * `-idea`: commands/genrsa/ciphers.bsh
-    * `-rand`
-    * `-writerand`
-    * `-engine`
+    * commands/genrsa/example.bsh: `-help`, `-3`, `-F4`, `-f4`, `-out`
+    * commands/genrsa/ciphers.bsh: `-passout`, `-aes128`, `-aes192`, `-aes256`, `-aria128`, `-aria192`, `-aria256`, `-camellia128`, `-camellia192`, `-camellia256`, `-des`, `-des3`, `-idea`
+    * commands/genrsa/primes.bsh: `-primes`
+    * TODO: `-rand`, `-writerand`, `-engine`
 * `rsa`
-    * `-help`
-    * `-inform`
-    * `-outform`
-    * `-in`
-    * `-out`
-    * `-pubin`
-    * `-pubout`
-    * `-passout`
-    * `-passin`
-    * `-RSAPublicKey_in`
-    * `-RSAPublicKey_out`
-    * `-noout`
-    * `-text`
-    * `-modulus`
-    * `-check`
-    * `-*`
-    * `-pvk-strong`
-    * `-pvk-weak`
-    * `-pvk-none`
-    * `-engine`
+    * `-help`, `-in`, `-text`, `-modulus`, `-check`, `-noout`, `-out`, `-pubin`, `-pubout`, `-passout`, `-passin`, `-aes128`, `-aes192`, `-aes256`, `-aria128`, `-aria192`, `-aria256`, `-camellia128`, `-camellia192`, `-camellia256`, `-des`, `-des3`, `-idea`
+    * TODO: `-RSAPublicKey_in`, `-RSAPublicKey_out`, `-inform`, `-outform`, `-pvk-strong`, `-pvk-weak`, `-pvk-none`, `-engine`
 * `asn1parse`
     * `-help`
     * `-inform`
@@ -208,6 +142,116 @@ OpenSSL and their options are listed belows, with the examples in which they are
     * `-conv_form`
     * `-*`
     * `-engine`
+* `req`
+    * `-help`
+    * `-inform`
+    * `-outform`
+    * `-in`
+    * `-out`
+    * `-key`
+    * `-keyform`
+    * `-pubkey`
+    * `-new`
+    * `-config`
+    * `-keyout`
+    * `-passin`
+    * `-passout`
+    * `-newkey`
+    * `-pkeyopt`
+    * `-sigopt`
+    * `-batch`
+    * `-newhdr`
+    * `-modulus`
+    * `-verify`
+    * `-nodes`
+    * `-noout`
+    * `-verbose`
+    * `-utf8`
+    * `-nameopt`
+    * `-reqopt`
+    * `-text`
+    * `-x509`
+    * `-subj`
+    * `-subject`
+    * `-multivalue-rdn`
+    * `-days`
+    * `-set_serial`
+    * `-addext`
+    * `-extensions`
+    * `-reqexts`
+    * `-precert`
+    * `-*`
+    * `-engine`
+    * `-keygen_engine`
+    * `-rand`
+    * `-writerand`
+* `x509`
+    * `-help`
+    * `-inform`
+    * `-in`
+    * `-outform`
+    * `-out`
+    * `-keyform`
+    * `-passin`
+    * `-serial`
+    * `-subject_hash`
+    * `-issuer_hash`
+    * `-hash`
+    * `-subject`
+    * `-issuer`
+    * `-email`
+    * `-startdate`
+    * `-enddate`
+    * `-purpose`
+    * `-dates`
+    * `-modulus`
+    * `-pubkey`
+    * `-fingerprint`
+    * `-alias`
+    * `-noout`
+    * `-nocert`
+    * `-ocspid`
+    * `-ocsp_uri`
+    * `-trustout`
+    * `-clrtrust`
+    * `-clrext`
+    * `-addtrust`
+    * `-addreject`
+    * `-setalias`
+    * `-days`
+    * `-checkend`
+    * `-signkey`
+    * `-x509toreq`
+    * `-req`
+    * `-CA`
+    * `-CAkey`
+    * `-CAcreateserial`
+    * `-CAserial`
+    * `-set_serial`
+    * `-text`
+    * `-ext`
+    * `-C`
+    * `-extfile`
+    * `-extensions`
+    * `-nameopt`
+    * `-certopt`
+    * `-checkhost`
+    * `-checkemail`
+    * `-checkip`
+    * `-CAform`
+    * `-CAkeyform`
+    * `-sigopt`
+    * `-force_pubkey`
+    * `-next_serial`
+    * `-clrreject`
+    * `-badsig`
+    * `-*`
+    * `-subject_hash_old`
+    * `-issuer_hash_old`
+    * `-engine`
+    * `-preserve_dates`
+    * `-rand`
+    * `-writerand`
 * `ca`
     * `-help`
     * `-verbose`
@@ -741,49 +785,6 @@ OpenSSL and their options are listed belows, with the examples in which they are
     * `-old`
     * `-n`
     * `-v`
-* `req`
-    * `-help`
-    * `-inform`
-    * `-outform`
-    * `-in`
-    * `-out`
-    * `-key`
-    * `-keyform`
-    * `-pubkey`
-    * `-new`
-    * `-config`
-    * `-keyout`
-    * `-passin`
-    * `-passout`
-    * `-newkey`
-    * `-pkeyopt`
-    * `-sigopt`
-    * `-batch`
-    * `-newhdr`
-    * `-modulus`
-    * `-verify`
-    * `-nodes`
-    * `-noout`
-    * `-verbose`
-    * `-utf8`
-    * `-nameopt`
-    * `-reqopt`
-    * `-text`
-    * `-x509`
-    * `-subj`
-    * `-subject`
-    * `-multivalue-rdn`
-    * `-days`
-    * `-set_serial`
-    * `-addext`
-    * `-extensions`
-    * `-reqexts`
-    * `-precert`
-    * `-*`
-    * `-engine`
-    * `-keygen_engine`
-    * `-rand`
-    * `-writerand`
 * `rsautl`
     * `-help`
     * `-in`
@@ -1426,70 +1427,3 @@ OpenSSL and their options are listed belows, with the examples in which they are
     * `-no_check_time`
     * `-allow_proxy_certs`
     * `-engine`
-* `x509`
-    * `-help`
-    * `-inform`
-    * `-in`
-    * `-outform`
-    * `-out`
-    * `-keyform`
-    * `-passin`
-    * `-serial`
-    * `-subject_hash`
-    * `-issuer_hash`
-    * `-hash`
-    * `-subject`
-    * `-issuer`
-    * `-email`
-    * `-startdate`
-    * `-enddate`
-    * `-purpose`
-    * `-dates`
-    * `-modulus`
-    * `-pubkey`
-    * `-fingerprint`
-    * `-alias`
-    * `-noout`
-    * `-nocert`
-    * `-ocspid`
-    * `-ocsp_uri`
-    * `-trustout`
-    * `-clrtrust`
-    * `-clrext`
-    * `-addtrust`
-    * `-addreject`
-    * `-setalias`
-    * `-days`
-    * `-checkend`
-    * `-signkey`
-    * `-x509toreq`
-    * `-req`
-    * `-CA`
-    * `-CAkey`
-    * `-CAcreateserial`
-    * `-CAserial`
-    * `-set_serial`
-    * `-text`
-    * `-ext`
-    * `-C`
-    * `-extfile`
-    * `-extensions`
-    * `-nameopt`
-    * `-certopt`
-    * `-checkhost`
-    * `-checkemail`
-    * `-checkip`
-    * `-CAform`
-    * `-CAkeyform`
-    * `-sigopt`
-    * `-force_pubkey`
-    * `-next_serial`
-    * `-clrreject`
-    * `-badsig`
-    * `-*`
-    * `-subject_hash_old`
-    * `-issuer_hash_old`
-    * `-engine`
-    * `-preserve_dates`
-    * `-rand`
-    * `-writerand`

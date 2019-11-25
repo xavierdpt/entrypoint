@@ -1,4 +1,0 @@
-#!/usr/bin/bash
-set -e
-./upgrade.bsh
-sudo apt-get install -y virtualbox-guest-dkms virtualbox-guest-utils 

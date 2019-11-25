@@ -1,0 +1,22 @@
+#!/usr/bin/bash
+
+set -e
+. ~/inside/interaction.bsh
+
+message "This script is about the encryption of RSA private keys with the OpenSSL 'genrsa' command."
+
+message "When specifying a cipher, genrsa will ask for a password to use for protecting the key."
+run "openssl genrsa -aes128"
+
+message "The password can be supplied on the command line."
+run "openssl genrsa -aes128 -passout pass:mypassword"
+
+message "Here are the outcomes of using each of the ciphers."
+for cipher in -aes128 -aes192 -aes256 -aria128 -aria192 -aria256 -camellia128 -camellia192 -camellia256 -des -des3; do
+	run "openssl genrsa $cipher -passout pass:mypassword"
+done
+
+message "Note: although -idea is shown in the manual page, the command reports an error for that case"
+run "openssl genrsa -idea -passout pass:mypassword" || true
+
+message "The End."

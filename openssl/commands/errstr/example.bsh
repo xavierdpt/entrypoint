@@ -1,0 +1,14 @@
+#!/usr/bin/bash
+
+set -e
+. ~/inside/interaction.bsh
+
+message "This script is about the OpenSSL 'errstr' command which maps error numbers to error messages."
+
+message "Here's some documentation about this command."
+run "openssl errstr -help"
+
+message "Here's an example."
+run "openssl errstr 41"
+
+message "The End."

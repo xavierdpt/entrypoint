@@ -3,107 +3,40 @@
 set -e
 . ~/inside/interaction.bsh
 
-if false ; then
 message "This script is about the OpenSSL 'req' command."
 
 message "Here's some documentation about this command."
 run "openssl req -help"
 
-message "Option -new generates a new certificate to standard output."
-message "It will ask for some information, but you can use the default except for the first password, 'mypassword' will work."
-run "openssl req -new"
+message "Let's create an unprotected private key first."
+run "openssl genrsa -out private_key.pem"
 
-message "Option -passout takes the first password."
-run "openssl req -new -passout pass:mypassword"
+message "Now we can create a certificate request with that private key"
+message "Option -new specifies to generate a new certificate request"
+message "Option -key specifies the key to use. Otherwise, a new protected private key will be generated."
+message "Option -out specifies where to output the certificate request to."
+message "Option -batch specifies to use the default values for the subject."
+run "openssl req -new -key private_key.pem -out certificate_request.pem -batch"
+run "cat certificate_request.pem"
 
-message "Option -out writes the output to the supplied file."
-message "Option -outform specifies the output format (PEM or DER). Default is PEM."
-run "openssl req -new -out certificate.pem -outform PEM -passout pass:mypassword"
+message "We can have more details with the -text option."
+message "Option -noout specifies not to output the encoded PEM."
+run "openssl req -in certificate_request.pem -text -noout"
+
+message "We can get only the subject with the -subject option."
+run "openssl req -in certificate_request.pem -subject -noout"
+
+message "Use the -subj option to set the subject."
+run "openssl req -new -key private_key.pem -out certificate_request.pem -batch -subj '/C=XX/ST=mystate/L=mylocality/O=myorganization/OU=myorganizationunit/CN=mycommonname/emailAddress=myemail/'"
+run "openssl req -in certificate_request.pem -subject -noout"
+
+message "To directly generate an x509 certificate, use the -x509 option."
+run "openssl req -new -key private_key.pem -x509 -out certificate.pem -batch -subj '/C=XX/ST=mystate/L=mylocality/O=myorganization/OU=myorganizationunit/CN=mycommonname/emailAddress=myemail/'"
 run "cat certificate.pem"
 
-message "Option -pubkey includes the public key in the output."
-run "openssl req -new -out certificate.pem -outform PEM -passout pass:mypassword -pubkey"
-run "cat certificate.pem"
-
-message "Option -keyout specifies where the private key will be generated. Default is privkey.pem"
-run "openssl req -new -out certificate.pem -outform PEM -passout pass:mypassword -pubkey -keyout key.pem"
-run "cat certificate.pem"
-run "cat key.pem"
-
-message "Option -batch does not ask for input."
-run "openssl req -new -out certificate.pem -outform PEM -passout pass:mypassword -pubkey -keyout key.pem -batch"
-run "cat certificate.pem"
-
-message "Option -text displays the content in human readable form."
-message "Option -in specifies the input."
-message "Option -inform specifies the input format."
-message "Option -noout discards the encoded content."
-run "openssl req -in certificate.pem -inform PEM -text -noout"
-
-message "Option -key specifies the private key to use."
-message "Option -keyform specifies the private key format."
-message "Option -passin specifies the password for the private key."
-run "openssl req -new -out certificate.pem -outform PEM -passin pass:mypassword -key key.pem -keyform PEM -batch"
-run "cat certificate.pem"
-
-message "Option -newkey specifies the type of the private key and it size."
-run "openssl req -new -out certificate.pem -outform PEM -passout pass:mypassword -newkey rsa:2048 -batch "
-run "cat certificate.pem"
-run "cat privkey.pem"
-
-message "Option -modulus displays the modulus."
-run "openssl req -in certificate.pem -inform PEM -modulus -noout"
-
-message "Option -verify displays the modulus."
-run "openssl req -in certificate.pem -verify -noout"
-
-message "Option -nodes doesn't encrypt the private key. In this case, no password is required for the key."
-run "openssl req -new -out certificate.pem -nodes -batch"
-run "cat privkey.pem"
-
-message "Option -verbose shows some more details."
-run "openssl req -new -out certificate.pem -nodes -verbose -batch"
-
-message "Option -x509 outputs an x509 structure."
-run "openssl req -new -out certificate.pem -nodes -x509 -batch"
-message "Then the x509 command can be used to inspect it."
+message "The x509 command must then be used to get information on the certificate."
 run "openssl x509 -in certificate.pem -text -noout"
+run "openssl x509 -in certificate.pem -subject -noout"
 
-message "Option -config specifies an alternate OpenSSL config file."
-run "openssl req -new -out certificate.pem -nodes -config /etc/ssl/openssl.cnf -batch"
 
-message "Option -subject shows the subject of the certificate."
-run "openssl req -in certificate.pem -subject"
 
-message "Option -subj sets the subject of the certificate."
-run "openssl req -new -out certificate.pem -nodes -batch -subj='/C=CC/ST=mystate/L=mylocality/O=myorg/OU=myorgunit/CN=mycn/emailAddress=me@myisp/'"
-
-message "Option -days sets the validity of the certificate. Ignored when generating certificate requests."
-run "openssl req -new -out certificate.pem -nodes -batch -x509 -days 1"
-run "openssl x509 -in certificate.pem -text -noout"
-
-message "Option -set_serial sets the serial number of the certificate. Ignored when generating certificate requests."
-run "openssl req -new -out certificate.pem -nodes -batch -x509 -set_serial 13"
-run "openssl x509 -in certificate.pem -text -noout"
-
-message "Option -newhder changes the header and footer for PEM."
-run "openssl req -new -out certificate.pem -nodes -batch -newhdr"
-run "cat certificate.pem"
-fi
-
-# -utf8               Input characters are UTF8 (default ASCII)
-# -addext val         Additional cert extension key=value pair (may be given more than once)
-# -extensions val     Cert extension section (override value in config file)
-# -reqexts val        Request extension section (override value in config file)
-# -precert            Add a poison extension (implies -new)
-# -*                  Any supported digest
-# -engine val         Use engine, possibly a hardware device
-# -keygen_engine val  Specify engine to be used for key generation operations
-# -rand val           Load the file(s) into the random number generator
-# -writerand outfile  Write random data to the specified file
-# -pkeyopt val        Public key options as opt:value
-# -sigopt val         Signature parameter in n:v form
-# -nameopt val        Various certificate name options
-# -reqopt val         Various request text options
-# -multivalue-rdn     Enable support for multivalued RDNs
-#
