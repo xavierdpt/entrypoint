@@ -9,8 +9,95 @@ A summary of commands is available with the following command:
 openssl help
 ```
 
-OpenSSL and their options are listed belows, with the examples in which they are most proeminently covered.
+OpenSSL and their options are listed belows, with the examples in which they are most proeminently covered. They are ordered in suggested studying order.
 
+* `help`
+    * `-help  Display this summary`
+* `list`
+    * `-help`
+    * `-1`
+    * `-commands`
+    * `-digest-commands`
+    * `-digest-algorithms`
+    * `-cipher-commands`
+    * `-cipher-algorithms`
+    * `-public-key-algorithms`
+    * `-public-key-methods`
+    * `-disabled`
+    * `-missing-help`
+    * `-options`
+* `version`
+    * `-help`
+    * `-a`
+    * `-b`
+    * `-d`
+    * `-e`
+    * `-f`
+    * `-o`
+    * `-p`
+    * `-r`
+    * `-v`
+* `errstr`
+    * `-help`
+* `prime`
+    * `-help`
+    * `-hex`
+    * `-generate`
+    * `-bits`
+    * `-safe`
+    * `-checks`
+* `rand`
+    * `-help`
+    * `-out`
+    * `-base64`
+    * `-hex`
+    * `-rand`
+    * `-writerand`
+    * `-engine`
+* `genrsa`
+    * `-help`: commands/genrsa/example.bsh
+    * `-3`: commands/genrsa/example.bsh
+    * `-F4`: commands/genrsa/example.bsh
+    * `-f4`: commands/genrsa/example.bsh
+    * `-out`: commands/genrsa/example.bsh
+    * `-primes`: commands/genrsa/primes.bsh
+    * `-passout`: commands/genrsa/ciphers.bsh
+    * `-aes128`: commands/genrsa/ciphers.bsh
+    * `-aes192`: commands/genrsa/ciphers.bsh
+    * `-aes256`: commands/genrsa/ciphers.bsh
+    * `-aria128`: commands/genrsa/ciphers.bsh
+    * `-aria192`: commands/genrsa/ciphers.bsh
+    * `-aria256`: commands/genrsa/ciphers.bsh
+    * `-camellia128`: commands/genrsa/ciphers.bsh
+    * `-camellia192`: commands/genrsa/ciphers.bsh
+    * `-camellia256`: commands/genrsa/ciphers.bsh
+    * `-des`: commands/genrsa/ciphers.bsh
+    * `-des3`: commands/genrsa/ciphers.bsh
+    * `-idea`: commands/genrsa/ciphers.bsh
+    * `-rand`
+    * `-writerand`
+    * `-engine`
+* `rsa`
+    * `-help`
+    * `-inform`
+    * `-outform`
+    * `-in`
+    * `-out`
+    * `-pubin`
+    * `-pubout`
+    * `-passout`
+    * `-passin`
+    * `-RSAPublicKey_in`
+    * `-RSAPublicKey_out`
+    * `-noout`
+    * `-text`
+    * `-modulus`
+    * `-check`
+    * `-*`
+    * `-pvk-strong`
+    * `-pvk-weak`
+    * `-pvk-none`
+    * `-engine`
 * `asn1parse`
     * `-help`
     * `-inform`
@@ -28,6 +115,99 @@ OpenSSL and their options are listed belows, with the examples in which they are
     * `-genconf`
     * `-strictpem`
     * `-item`
+* `dhparam`
+    * `-help`
+    * `-in`
+    * `-inform`
+    * `-outform`
+    * `-out`
+    * `-check`
+    * `-text`
+    * `-noout`
+    * `-C`
+    * `-2`
+    * `-5`
+    * `-dsaparam`
+    * `-rand`
+    * `-writerand`
+    * `-engine`
+* `dsaparam`
+    * `-help`
+    * `-inform`
+    * `-in`
+    * `-outform`
+    * `-out`
+    * `-text`
+    * `-C`
+    * `-noout`
+    * `-genkey`
+    * `-rand`
+    * `-writerand`
+    * `-engine`
+* `gendsa`
+    * `-help`
+    * `-out`
+    * `-passout`
+    * `-*`
+    * `-rand`
+    * `-writerand`
+    * `-engine`
+* `dsa`
+    * `-help`
+    * `-inform`
+    * `-outform`
+    * `-in`
+    * `-out`
+    * `-noout`
+    * `-text`
+    * `-modulus`
+    * `-pubin`
+    * `-pubout`
+    * `-passin`
+    * `-passout`
+    * `-*`
+    * `-pvk-strong`
+    * `-pvk-weak`
+    * `-pvk-none`
+    * `-engine`
+* `ecparam`
+    * `-help`
+    * `-inform`
+    * `-outform`
+    * `-in`
+    * `-out`
+    * `-text`
+    * `-C`
+    * `-check`
+    * `-list_curves`
+    * `-no_seed`
+    * `-noout`
+    * `-name`
+    * `-conv_form`
+    * `-param_enc`
+    * `-genkey`
+    * `-rand`
+    * `-writerand`
+    * `-engine`
+* `ec`
+    * `-help`
+    * `-in`
+    * `-inform`
+    * `-out`
+    * `-outform`
+    * `-noout`
+    * `-text`
+    * `-param_out`
+    * `-pubin`
+    * `-pubout`
+    * `-no_public`
+    * `-check`
+    * `-passin`
+    * `-passout`
+    * `-param_enc`
+    * `-conv_form`
+    * `-*`
+    * `-engine`
 * `ca`
     * `-help`
     * `-verbose`
@@ -164,8 +344,6 @@ OpenSSL and their options are listed belows, with the examples in which they are
     * `-receipt_request_from`
     * `-receipt_request_to`
     * `-*`
-    * `-rand`
-    * `-writerand`
     * `-policy`
     * `-purpose`
     * `-verify_name`
@@ -200,7 +378,9 @@ OpenSSL and their options are listed belows, with the examples in which they are
     * `-aes192-wrap`
     * `-aes256-wrap`
     * `-des3-wrap`
-    * `-engine val`
+    * `-rand`
+    * `-writerand`
+    * `-engine`
 * `crl`
     * `-help`
     * `-inform`
@@ -260,91 +440,6 @@ OpenSSL and their options are listed belows, with the examples in which they are
     * `-writerand`
     * `-engine`
     * `-engine_impl`
-* `dhparam`
-    * `-help`
-    * `-in`
-    * `-inform`
-    * `-outform`
-    * `-out`
-    * `-check`
-    * `-text`
-    * `-noout`
-    * `-rand`
-    * `-writerand`
-    * `-C`
-    * `-2`
-    * `-5`
-    * `-dsaparam`
-    * `-engine`
-* `dsa`
-    * `-help`
-    * `-inform`
-    * `-outform`
-    * `-in`
-    * `-out`
-    * `-noout`
-    * `-text`
-    * `-modulus`
-    * `-pubin`
-    * `-pubout`
-    * `-passin`
-    * `-passout`
-    * `-*`
-    * `-pvk-strong`
-    * `-pvk-weak`
-    * `-pvk-none`
-    * `-engine`
-* `dsaparam`
-    * `-help`
-    * `-inform`
-    * `-in`
-    * `-outform`
-    * `-out`
-    * `-text`
-    * `-C`
-    * `-noout`
-    * `-genkey`
-    * `-rand`
-    * `-writerand`
-    * `-engine`
-* `ec`
-    * `-help`
-    * `-in`
-    * `-inform`
-    * `-out`
-    * `-outform`
-    * `-noout`
-    * `-text`
-    * `-param_out`
-    * `-pubin`
-    * `-pubout`
-    * `-no_public`
-    * `-check`
-    * `-passin`
-    * `-passout`
-    * `-param_enc`
-    * `-conv_form`
-    * `-*`
-    * `-engine`
-* `ecparam`
-    * `-help`
-    * `-inform`
-    * `-outform`
-    * `-in`
-    * `-out`
-    * `-text`
-    * `-C`
-    * `-check`
-    * `-list_curves`
-    * `-no_seed`
-    * `-noout`
-    * `-name`
-    * `-conv_form`
-    * `-param_enc`
-    * `-genkey`
-    * `-rand`
-    * `-writerand`
-    * `-engine`
 * `enc`
     * `-help`
     * `-ciphers`
@@ -388,16 +483,6 @@ OpenSSL and their options are listed belows, with the examples in which they are
     * `-tt`
     * `-pre`
     * `-post`
-* `errstr`
-    * `-help`
-* `gendsa`
-    * `-help`
-    * `-out`
-    * `-passout`
-    * `-rand`
-    * `-writerand`
-    * `-*`
-    * `-engine`
 * `genpkey`
     * `-help`
     * `-out`
@@ -410,33 +495,6 @@ OpenSSL and their options are listed belows, with the examples in which they are
     * `-text`
     * `-*`
     * `-engine`
-* `genrsa`
-    * `-help`
-    * `-3`
-    * `-F4`
-    * `-f4`
-    * `-out`
-    * `-rand`
-    * `-writerand`
-    * `-passout`
-    * `-*`
-    * `-engine`
-    * `-primes`
-* `help`
-    * `-help  Display this summary`
-* `list`
-    * `-help`
-    * `-1`
-    * `-commands`
-    * `-digest-commands`
-    * `-digest-algorithms`
-    * `-cipher-commands`
-    * `-cipher-algorithms`
-    * `-public-key-algorithms`
-    * `-public-key-methods`
-    * `-disabled`
-    * `-missing-help`
-    * `-options`
 * `nseq`
     * `-help`
     * `-toseq`
@@ -570,8 +628,6 @@ OpenSSL and their options are listed belows, with the examples in which they are
     * `-nodes`
     * `-macalg`
     * `-keypbe`
-    * `-rand`
-    * `-writerand`
     * `-inkey`
     * `-certfile`
     * `-name`
@@ -588,6 +644,8 @@ OpenSSL and their options are listed belows, with the examples in which they are
     * `-no-CApath`
     * `-*`
     * `-engine`
+    * `-rand`
+    * `-writerand`
 * `pkcs7`
     * `-help`
     * `-inform`
@@ -608,8 +666,6 @@ OpenSSL and their options are listed belows, with the examples in which they are
     * `-topk8`
     * `-noiter`
     * `-nocrypt`
-    * `-rand`
-    * `-writerand`
     * `-v2`
     * `-v1`
     * `-v2prf`
@@ -622,6 +678,8 @@ OpenSSL and their options are listed belows, with the examples in which they are
     * `-scrypt_N`
     * `-scrypt_r`
     * `-scrypt_p`
+    * `-rand`
+    * `-writerand`
 * `pkey`
     * `-help`
     * `-inform`
@@ -676,21 +734,6 @@ OpenSSL and their options are listed belows, with the examples in which they are
     * `-writerand`
     * `-engine`
     * `-engine_impl`
-* `prime`
-    * `-help`
-    * `-hex`
-    * `-generate`
-    * `-bits`
-    * `-safe`
-    * `-checks`
-* `rand`
-    * `-help`
-    * `-out`
-    * `-rand`
-    * `-writerand`
-    * `-base64`
-    * `-hex`
-    * `-engine`
 * `rehash`
     * `-help`
     * `-h`
@@ -712,8 +755,6 @@ OpenSSL and their options are listed belows, with the examples in which they are
     * `-keyout`
     * `-passin`
     * `-passout`
-    * `-rand`
-    * `-writerand`
     * `-newkey`
     * `-pkeyopt`
     * `-sigopt`
@@ -741,27 +782,8 @@ OpenSSL and their options are listed belows, with the examples in which they are
     * `-*`
     * `-engine`
     * `-keygen_engine`
-* `rsa`
-    * `-help`
-    * `-inform`
-    * `-outform`
-    * `-in`
-    * `-out`
-    * `-pubin`
-    * `-pubout`
-    * `-passout`
-    * `-passin`
-    * `-RSAPublicKey_in`
-    * `-RSAPublicKey_out`
-    * `-noout`
-    * `-text`
-    * `-modulus`
-    * `-check`
-    * `-*`
-    * `-pvk-strong`
-    * `-pvk-weak`
-    * `-pvk-none`
-    * `-engine`
+    * `-rand`
+    * `-writerand`
 * `rsautl`
     * `-help`
     * `-in`
@@ -824,8 +846,6 @@ OpenSSL and their options are listed belows, with the examples in which they are
     * `-no_ign_eof`
     * `-starttls`
     * `-xmpphost`
-    * `-rand`
-    * `-writerand`
     * `-sess_out`
     * `-sess_in`
     * `-use_srtp`
@@ -955,6 +975,8 @@ OpenSSL and their options are listed belows, with the examples in which they are
     * `-keylogfile`
     * `-early_data`
     * `-enable_pha`
+    * `-rand`
+    * `-writerand`
 * `s_server`
     * `-help`
     * `-port`
@@ -1002,8 +1024,6 @@ OpenSSL and their options are listed belows, with the examples in which they are
     * `-tlsextdebug`
     * `-HTTP`
     * `-id_prefix`
-    * `-rand`
-    * `-writerand`
     * `-keymatexport`
     * `-keymatexportlen`
     * `-CRL`
@@ -1133,6 +1153,8 @@ OpenSSL and their options are listed belows, with the examples in which they are
     * `-num_tickets`
     * `-anti_replay`
     * `-no_anti_replay`
+    * `-rand`
+    * `-writerand`
 * `s_time`
     * `-help`
     * `-connect`
@@ -1200,8 +1222,6 @@ OpenSSL and their options are listed belows, with the examples in which they are
     * `-indef`
     * `-noindef`
     * `-crlfeol`
-    * `-rand`
-    * `-writerand`
     * `-passin`
     * `-md`
     * `-*`
@@ -1236,6 +1256,8 @@ OpenSSL and their options are listed belows, with the examples in which they are
     * `-no_check_time`
     * `-allow_proxy_certs`
     * `-engine`
+    * `-rand`
+    * `-writerand`
 * `speed`
     * `-help`
     * `-evp`
@@ -1245,14 +1267,14 @@ OpenSSL and their options are listed belows, with the examples in which they are
     * `-mr`
     * `-multi`
     * `-async_jobs`
-    * `-rand`
-    * `-writerand`
     * `-engine`
     * `-elapsed`
     * `-primes`
     * `-seconds`
     * `-bytes`
     * `-misalign`
+    * `-rand`
+    * `-writerand`
 * `spkac`
     * `-help`
     * `-in`
@@ -1308,8 +1330,6 @@ OpenSSL and their options are listed belows, with the examples in which they are
     * `-query`
     * `-data`
     * `-digest`
-    * `-rand`
-    * `-writerand`
     * `-tspolicy`
     * `-no_nonce`
     * `-cert`
@@ -1360,6 +1380,8 @@ OpenSSL and their options are listed belows, with the examples in which they are
     * `-no_alt_chains`
     * `-no_check_time`
     * `-allow_proxy_certs`
+    * `-rand`
+    * `-writerand`
 * `verify`
     * `-help`
     * `-verbose`
@@ -1404,17 +1426,6 @@ OpenSSL and their options are listed belows, with the examples in which they are
     * `-no_check_time`
     * `-allow_proxy_certs`
     * `-engine`
-* `version`
-    * `-help`
-    * `-a`
-    * `-b`
-    * `-d`
-    * `-e`
-    * `-f`
-    * `-o`
-    * `-p`
-    * `-r`
-    * `-v`
 * `x509`
     * `-help`
     * `-inform`
@@ -1462,8 +1473,6 @@ OpenSSL and their options are listed belows, with the examples in which they are
     * `-ext`
     * `-C`
     * `-extfile`
-    * `-rand`
-    * `-writerand`
     * `-extensions`
     * `-nameopt`
     * `-certopt`
@@ -1482,3 +1491,5 @@ OpenSSL and their options are listed belows, with the examples in which they are
     * `-issuer_hash_old`
     * `-engine`
     * `-preserve_dates`
+    * `-rand`
+    * `-writerand`
