@@ -1,0 +1,2706 @@
+
+ Apache Groovy
+Learn
+Documentation
+Download
+Support
+Contribute
+Ecosystem
+Socialize
+Table of contents
+1. Statements
+1.1. Variable definition
+1.2. Variable assignment
+1.2.1. Multiple assignment
+1.2.2. Overflow and Underflow
+1.2.3. Object destructuring with multiple assignment
+1.3. Control structures
+1.3.1. Conditional structures
+if / else
+switch / case
+1.3.2. Looping structures
+Classic for loop
+for in loop
+while loop
+1.3.3. Exception handling
+1.3.4. try / catch / finally
+1.3.5. Multi-catch
+1.4. Power assertion
+1.5. Labeled statements
+2. Expressions
+2.1. GPath expressions
+2.1.1. Object navigation
+2.1.2. Expression Deconstruction
+2.1.3. GPath for XML navigation
+3. Promotion and coercion
+3.1. Number promotion
+3.2. Closure to type coercion
+3.2.1. Assigning a closure to a SAM type
+3.2.2. Calling a method accepting a SAM type with a closure
+3.2.3. Closure to arbitrary type coercion
+3.3. Map to type coercion
+3.4. String to enum coercion
+3.5. Custom type coercion
+3.6. Class literals vs variables and the as operator
+4. Optionality
+4.1. Optional parentheses
+4.2. Optional semicolons
+4.3. Optional return keyword
+4.4. Optional public keyword
+5. The Groovy Truth
+5.1. Boolean expressions
+5.2. Collections and Arrays
+5.3. Matchers
+5.4. Iterators and Enumerations
+5.5. Maps
+5.6. Strings
+5.7. Numbers
+5.8. Object References
+5.9. Customizing the truth with asBoolean() methods
+6. Typing
+6.1. Optional typing
+6.2. Static type checking
+6.2.1. The @TypeChecked annotation
+Activating type checking at compile time
+Skipping sections
+6.2.2. Type checking assignments
+6.2.3. List and map constructors
+6.2.4. Method resolution
+6.2.5. Type inference
+Principles
+Variables vs fields in type inference
+Collection literal type inference
+Least upper bound
+instanceof inference
+Flow typing
+Advanced type inference
+6.2.6. Closures and type inference
+Return type inference
+Parameter type inference
+Explicit closure parameters
+Parameters inferred from single-abstract method types
+The @ClosureParams annotation
+@DelegatesTo
+6.3. Static compilation
+6.3.1. Dynamic vs static
+6.3.2. The @CompileStatic annotation
+6.3.3. Key benefits
+7. Type checking extensions
+7.1. Writing a type checking extension
+7.1.1. Towards a smarter type checker
+7.1.2. The extensions attribute
+7.1.3. A DSL for type checking
+7.1.4. Type checking extensions API
+AST
+Events
+7.1.5. Working with extensions
+Support classes
+Class nodes
+Helping the type checker
+Throwing an error
+isXXXExpression
+Virtual methods
+Scoping
+Other useful methods
+7.2. Advanced type checking extensions
+7.2.1. Precompiled type checking extensions
+7.2.2. Using @Grab in a type checking extension
+7.2.3. Sharing or packaging type checking extensions
+7.2.4. Global type checking extensions
+7.2.5. Type checking extensions and @CompileStatic
+7.2.6. Mixed mode compilation
+7.2.7. Transforming the AST in an extension
+7.2.8. Examples
+Semantics
+This chapter covers the semantics of the Groovy programming language.
+
+1. Statements
+1.1. Variable definition
+Variables can be defined using either their type (like String) or by using the keyword def:
+
+String x
+def o
+def is a replacement for a type name. In variable definitions it is used to indicate that you don’t care about the type. In variable definitions it is mandatory to either provide a type name explicitly or to use "def" in replacement. This is needed to make variable definitions detectable for the Groovy parser.
+
+You can think of def as an alias of Object and you will understand it in an instant.
+
+Variable definition types can be refined by using generics, like in List<String> names. To learn more about the generics support, please read the generics section.
+1.2. Variable assignment
+You can assign values to variables for later use. Try the following:
+
+x = 1
+println x
+
+x = new java.util.Date()
+println x
+
+x = -3.1499392
+println x
+
+x = false
+println x
+
+x = "Hi"
+println x
+1.2.1. Multiple assignment
+Groovy supports multiple assignment, i.e. where multiple variables can be assigned at once, e.g.:
+
+def (a, b, c) = [10, 20, 'foo']
+assert a == 10 && b == 20 && c == 'foo'
+You can provide types as part of the declaration if you wish:
+
+def (int i, String j) = [10, 'foo']
+assert i == 10 && j == 'foo'
+As well as used when declaring variables it also applies to existing variables:
+
+def nums = [1, 3, 5]
+def a, b, c
+(a, b, c) = nums
+assert a == 1 && b == 3 && c == 5
+The syntax works for arrays as well as lists, as well as methods that return either of these:
+
+def (_, month, year) = "18th June 2009".split()
+assert "In $month of $year" == 'In June of 2009'
+1.2.2. Overflow and Underflow
+If the left hand side has too many variables, excess ones are filled with null’s:
+
+def (a, b, c) = [1, 2]
+assert a == 1 && b == 2 && c == null
+If the right hand side has too many variables, the extra ones are ignored:
+
+def (a, b) = [1, 2, 3]
+assert a == 1 && b == 2
+1.2.3. Object destructuring with multiple assignment
+In the section describing the various Groovy operators, the case of the subscript operator has been covered, explaining how you can override the getAt()/putAt() method.
+
+With this technique, we can combine multiple assignments and the subscript operator methods to implement object destructuring.
+
+Consider the following immutable Coordinates class, containing a pair of longitude and latitude doubles, and notice our implementation of the getAt() method:
+
+@Immutable
+class Coordinates {
+    double latitude
+    double longitude
+
+    double getAt(int idx) {
+        if (idx == 0) latitude
+        else if (idx == 1) longitude
+        else throw new Exception("Wrong coordinate index, use 0 or 1")
+    }
+}
+Now let’s instantiate this class and destructure its longitude and latitude:
+
+def coordinates = new Coordinates(latitude: 43.23, longitude: 3.67) 
+
+def (la, lo) = coordinates                                          
+
+assert la == 43.23                                                  
+assert lo == 3.67
+we create an instance of the Coordinates class
+then, we use a multiple assignment to get the individual longitude and latitude values
+and we can finally assert their values.
+1.3. Control structures
+1.3.1. Conditional structures
+if / else
+Groovy supports the usual if - else syntax from Java
+
+def x = false
+def y = false
+
+if ( !x ) {
+    x = true
+}
+
+assert x == true
+
+if ( x ) {
+    x = false
+} else {
+    y = true
+}
+
+assert x == y
+Groovy also supports the normal Java "nested" if then else if syntax:
+
+if ( ... ) {
+    ...
+} else if (...) {
+    ...
+} else {
+    ...
+}
+switch / case
+The switch statement in Groovy is backwards compatible with Java code; so you can fall through cases sharing the same code for multiple matches.
+
+One difference though is that the Groovy switch statement can handle any kind of switch value and different kinds of matching can be performed.
+
+def x = 1.23
+def result = ""
+
+switch ( x ) {
+    case "foo":
+        result = "found foo"
+        // lets fall through
+
+    case "bar":
+        result += "bar"
+
+    case [4, 5, 6, 'inList']:
+        result = "list"
+        break
+
+    case 12..30:
+        result = "range"
+        break
+
+    case Integer:
+        result = "integer"
+        break
+
+    case Number:
+        result = "number"
+        break
+
+    case ~/fo*/: // toString() representation of x matches the pattern?
+        result = "foo regex"
+        break
+
+    case { it < 0 }: // or { x < 0 }
+        result = "negative"
+        break
+
+    default:
+        result = "default"
+}
+
+assert result == "number"
+Switch supports the following kinds of comparisons:
+
+Class case values match if the switch value is an instance of the class
+
+Regular expression case values match if the toString() representation of the switch value matches the regex
+
+Collection case values match if the switch value is contained in the collection. This also includes ranges (since they are Lists)
+
+Closure case values match if the calling the closure returns a result which is true according to the Groovy truth
+
+If none of the above are used then the case value matches if the case value equals the switch value
+
+When using a closure case value, the default it parameter is actually the switch value (in our example, variable x).
+1.3.2. Looping structures
+Classic for loop
+Groovy supports the standard Java / C for loop:
+
+String message = ''
+for (int i = 0; i < 5; i++) {
+    message += 'Hi '
+}
+assert message == 'Hi Hi Hi Hi Hi '
+for in loop
+The for loop in Groovy is much simpler and works with any kind of array, collection, Map, etc.
+
+// iterate over a range
+def x = 0
+for ( i in 0..9 ) {
+    x += i
+}
+assert x == 45
+
+// iterate over a list
+x = 0
+for ( i in [0, 1, 2, 3, 4] ) {
+    x += i
+}
+assert x == 10
+
+// iterate over an array
+def array = (0..4).toArray()
+x = 0
+for ( i in array ) {
+    x += i
+}
+assert x == 10
+
+// iterate over a map
+def map = ['abc':1, 'def':2, 'xyz':3]
+x = 0
+for ( e in map ) {
+    x += e.value
+}
+assert x == 6
+
+// iterate over values in a map
+x = 0
+for ( v in map.values() ) {
+    x += v
+}
+assert x == 6
+
+// iterate over the characters in a string
+def text = "abc"
+def list = []
+for (c in text) {
+    list.add(c)
+}
+assert list == ["a", "b", "c"]
+Groovy also supports the Java colon variation with colons: for (char c : text) {}, where the type of the variable is mandatory.
+while loop
+Groovy supports the usual while {…​} loops like Java:
+
+def x = 0
+def y = 5
+
+while ( y-- > 0 ) {
+    x++
+}
+
+assert x == 5
+1.3.3. Exception handling
+Exception handling is the same as Java.
+
+1.3.4. try / catch / finally
+You can specify a complete try-catch-finally, a try-catch, or a try-finally set of blocks.
+
+Braces are required around each block’s body.
+try {
+    'moo'.toLong()   // this will generate an exception
+    assert false     // asserting that this point should never be reached
+} catch ( e ) {
+    assert e in NumberFormatException
+}
+We can put code within a 'finally' clause following a matching 'try' clause, so that regardless of whether the code in the 'try' clause throws an exception, the code in the finally clause will always execute:
+
+def z
+try {
+    def i = 7, j = 0
+    try {
+        def k = i / j
+        assert false        //never reached due to Exception in previous line
+    } finally {
+        z = 'reached here'  //always executed even if Exception thrown
+    }
+} catch ( e ) {
+    assert e in ArithmeticException
+    assert z == 'reached here'
+}
+1.3.5. Multi-catch
+With the multi catch block (since Groovy 2.0), we’re able to define several exceptions to be catch and treated by the same catch block:
+
+try {
+    /* ... */
+} catch ( IOException | NullPointerException e ) {
+    /* one block to handle 2 exceptions */
+}
+1.4. Power assertion
+Unlike Java with which Groovy shares the assert keyword, the latter in Groovy behaves very differently. First of all, an assertion in Groovy is always executed, independently of the -ea flag of the JVM. It makes this a first class choice for unit tests. The notion of "power asserts" is directly related to how the Groovy assert behaves.
+
+A power assertion is decomposed into 3 parts:
+
+assert [left expression] == [right expression] : (optional message)
+The result of the assertion is very different from what you would get in Java. If the assertion is true, then nothing happens. If the assertion is false, then it provides a visual representation of the value of each sub-expressions of the expression being asserted. For example:
+
+assert 1+1 == 3
+Will yield:
+
+Caught: Assertion failed:
+
+assert 1+1 == 3
+        |  |
+        2  false
+Power asserts become very interesting when the expressions are more complex, like in the next example:
+
+def x = 2
+def y = 7
+def z = 5
+def calc = { a,b -> a*b+1 }
+assert calc(x,y) == [x,z].sum()
+Which will print the value for each sub-expression:
+
+assert calc(x,y) == [x,z].sum()
+       |    | |  |   | |  |
+       15   2 7  |   2 5  7
+                 false
+In case you don’t want a pretty printed error message like above, you can fallback to a custom error message by changing the optional message part of the assertion, like in this example:
+
+def x = 2
+def y = 7
+def z = 5
+def calc = { a,b -> a*b+1 }
+assert calc(x,y) == z*z : 'Incorrect computation result'
+Which will print the following error message:
+
+Incorrect computation result. Expression: (calc.call(x, y) == (z * z)). Values: z = 5, z = 5
+1.5. Labeled statements
+Any statement can be associated with a label. Labels do not impact the semantics of the code and can be used to make the code easier to read like in the following example:
+
+given:
+    def x = 1
+    def y = 2
+when:
+    def z = x+y
+then:
+    assert z == 3
+Despite not changing the semantics of the labelled statement, it is possible to use labels in the break instruction as a target for jump, as in the next example. However, even if this is allowed, this coding style is in general considered a bad practice:
+
+for (int i=0;i<10;i++) {
+    for (int j=0;j<i;j++) {
+        println "j=$j"
+        if (j == 5) {
+            break exit
+        }
+    }
+    exit: println "i=$i"
+}
+It is important to understand that by default labels have no impact on the semantics of the code, however they belong to the abstract syntax tree (AST) so it is possible for an AST transformation to use that information to perform transformations over the code, hence leading to different semantics. This is in particular what the Spock Framework does to make testing easier.
+
+2. Expressions
+(TBD)
+
+2.1. GPath expressions
+GPath is a path expression language integrated into Groovy which allows parts of nested structured data to be identified. In this sense, it has similar aims and scope as XPath does for XML. GPath is often used in the context of processing XML, but it really applies to any object graph. Where XPath uses a filesystem-like path notation, a tree hierarchy with parts separated by a slash /, GPath use a dot-object notation to perform object navigation.
+
+As an example, you can specify a path to an object or element of interest:
+
+a.b.c → for XML, yields all the c elements inside b inside a
+
+a.b.c → for POJOs, yields the c properties for all the b properties of a (sort of like a.getB().getC() in JavaBeans)
+
+In both cases, the GPath expression can be viewed as a query on an object graph. For POJOs, the object graph is most often built by the program being written through object instantiation and composition; for XML processing, the object graph is the result of parsing the XML text, most often with classes like XmlParser or XmlSlurper. See Processing XML for more in-depth details on consuming XML in Groovy.
+
+When querying the object graph generated from XmlParser or XmlSlurper, a GPath expression can refer to attributes defined on elements with the @ notation:
+
+a["@href"] → map-like notation : the href attribute of all the a elements
+
+a.'@href' → property notation : an alternative way of expressing this
+
+a.@href → direct notation : yet another alternative way of expressing this
+
+2.1.1. Object navigation
+Let’s see an example of a GPath expression on a simple object graph, the one obtained using java reflection. Suppose you are in a non-static method of a class having another method named aMethodFoo
+
+void aMethodFoo() { println "This is aMethodFoo." } 
+the following GPath expression will get the name of that method:
+
+assert ['aMethodFoo'] == this.class.methods.name.grep(~/.*Foo/)
+More precisely, the above GPath expression produces a list of String, each being the name of an existing method on this where that name ends with Foo.
+
+Now, given the following methods also defined in that class:
+
+void aMethodBar() { println "This is aMethodBar." } 
+void anotherFooMethod() { println "This is anotherFooMethod." } 
+void aSecondMethodBar() { println "This is aSecondMethodBar." } 
+then the following GPath expression will get the names of (1) and (3), but not (2) or (0):
+
+assert ['aMethodBar', 'aSecondMethodBar'] as Set == this.class.methods.name.grep(~/.*Bar/) as Set
+2.1.2. Expression Deconstruction
+We can decompose the expression this.class.methods.name.grep(~/.*Bar/) to get an idea of how a GPath is evaluated:
+
+this.class
+property accessor, equivalent to this.getClass() in Java, yields a Class object.
+
+this.class.methods
+property accessor, equivalent to this.getClass().getMethods(), yields an array of Method objects.
+
+this.class.methods.name
+apply a property accessor on each element of an array and produce a list of the results.
+
+this.class.methods.name.grep(…​)
+call method grep on each element of the list yielded by this.class.methods.name and produce a list of the results.
+
+A sub-expression like this.class.methods yields an array because this is what calling this.getClass().getMethods() in Java would produce. GPath expressions do not have a convention where a s means a list or anything like that.
+One powerful feature of GPath expression is that property access on a collection is converted to a property access on each element of the collection with the results collected into a collection. Therefore, the expression this.class.methods.name could be expressed as follows in Java:
+
+List<String> methodNames = new ArrayList<String>();
+for (Method method : this.getClass().getMethods()) {
+   methodNames.add(method.getName());
+}
+return methodNames;
+Array access notation can also be used in a GPath expression where a collection is present :
+
+assert 'aSecondMethodBar' == this.class.methods.name.grep(~/.*Bar/).sort()[1]
+array access are zero-based in GPath expressions
+2.1.3. GPath for XML navigation
+Here is an example with a XML document and various form of GPath expressions:
+
+def xmlText = """
+              | <root>
+              |   <level>
+              |      <sublevel id='1'>
+              |        <keyVal>
+              |          <key>mykey</key>
+              |          <value>value 123</value>
+              |        </keyVal>
+              |      </sublevel>
+              |      <sublevel id='2'>
+              |        <keyVal>
+              |          <key>anotherKey</key>
+              |          <value>42</value>
+              |        </keyVal>
+              |        <keyVal>
+              |          <key>mykey</key>
+              |          <value>fizzbuzz</value>
+              |        </keyVal>
+              |      </sublevel>
+              |   </level>
+              | </root>
+              """
+def root = new XmlSlurper().parseText(xmlText.stripMargin())
+assert root.level.size() == 1 
+assert root.level.sublevel.size() == 2 
+assert root.level.sublevel.findAll { it.@id == 1 }.size() == 1 
+assert root.level.sublevel[1].keyVal[0].key.text() == 'anotherKey' 
+There is one level node under root
+There are two sublevel nodes under root/level
+There is one element sublevel having an attribute id with value 1
+Text value of key element of first keyVal element of second sublevel element under root/level is 'anotherKey'
+3. Promotion and coercion
+3.1. Number promotion
+The rules of number promotion are specified in the section on math operations.
+
+3.2. Closure to type coercion
+3.2.1. Assigning a closure to a SAM type
+A SAM type is a type which defines a single abstract method. This includes:
+
+Functional interfaces
+interface Predicate<T> {
+    boolean accept(T obj)
+}
+Abstract classes with single abstract method
+abstract class Greeter {
+    abstract String getName()
+    void greet() {
+        println "Hello, $name"
+    }
+}
+Any closure can be converted into a SAM type using the as operator:
+
+Predicate filter = { it.contains 'G' } as Predicate
+assert filter.accept('Groovy') == true
+
+Greeter greeter = { 'Groovy' } as Greeter
+greeter.greet()
+However, the as Type expression is optional since Groovy 2.2.0. You can omit it and simply write:
+
+Predicate filter = { it.contains 'G' }
+assert filter.accept('Groovy') == true
+
+Greeter greeter = { 'Groovy' }
+greeter.greet()
+which means you are also allowed to use method pointers, as shown in the following example:
+
+boolean doFilter(String s) { s.contains('G') }
+
+Predicate filter = this.&doFilter
+assert filter.accept('Groovy') == true
+
+Greeter greeter = GroovySystem.&getVersion
+greeter.greet()
+3.2.2. Calling a method accepting a SAM type with a closure
+The second and probably more important use case for closure to SAM type coercion is calling a method which accepts a SAM type. Imagine the following method:
+
+public <T> List<T> filter(List<T> source, Predicate<T> predicate) {
+    source.findAll { predicate.accept(it) }
+}
+Then you can call it with a closure, without having to create an explicit implementation of the interface:
+
+assert filter(['Java','Groovy'], { it.contains 'G'} as Predicate) == ['Groovy']
+But since Groovy 2.2.0, you are also able to omit the explicit coercion and call the method as if it used a closure:
+
+assert filter(['Java','Groovy']) { it.contains 'G'} == ['Groovy']
+As you can see, this has the advantage of letting you use the closure syntax for method calls, that is to say put the closure outside of the parenthesis, improving the readability of your code.
+
+3.2.3. Closure to arbitrary type coercion
+In addition to SAM types, a closure can be coerced to any type and in particular interfaces. Let’s define the following interface:
+
+interface FooBar {
+    int foo()
+    void bar()
+}
+You can coerce a closure into the interface using the as keyword:
+
+def impl = { println 'ok'; 123 } as FooBar
+This produces a class for which all methods are implemented using the closure:
+
+assert impl.foo() == 123
+impl.bar()
+But it is also possible to coerce a closure to any class. For example, we can replace the interface that we defined with class without changing the assertions:
+
+class FooBar {
+    int foo() { 1 }
+    void bar() { println 'bar' }
+}
+
+def impl = { println 'ok'; 123 } as FooBar
+
+assert impl.foo() == 123
+impl.bar()
+3.3. Map to type coercion
+Usually using a single closure to implement an interface or a class with multiple methods is not the way to go. As an alternative, Groovy allows you to coerce a map into an interface or a class. In that case, keys of the map are interpreted as method names, while the values are the method implementation. The following example illustrates the coercion of a map into an Iterator:
+
+def map
+map = [
+  i: 10,
+  hasNext: { map.i > 0 },
+  next: { map.i-- },
+]
+def iter = map as Iterator
+Of course this is a rather contrived example, but illustrates the concept. You only need to implement those methods that are actually called, but if a method is called that doesn’t exist in the map a MissingMethodException or an UnsupportedOperationException is thrown, depending on the arguments passed to the call, as in the following example:
+
+interface X {
+    void f()
+    void g(int n)
+    void h(String s, int n)
+}
+
+x = [ f: {println "f called"} ] as X
+x.f() // method exists
+x.g() // MissingMethodException here
+x.g(5) // UnsupportedOperationException here
+The type of the exception depends on the call itself:
+
+MissingMethodException if the arguments of the call do not match those from the interface/class
+
+UnsupportedOperationException if the arguments of the call match one of the overloaded methods of the interface/class
+
+3.4. String to enum coercion
+Groovy allows transparent String (or GString) to enum values coercion. Imagine you define the following enum:
+
+enum State {
+    up,
+    down
+}
+then you can assign a string to the enum without having to use an explicit as coercion:
+
+State st = 'up'
+assert st == State.up
+It is also possible to use a GString as the value:
+
+def val = "up"
+State st = "${val}"
+assert st == State.up
+However, this would throw a runtime error (IllegalArgumentException):
+
+State st = 'not an enum value'
+Note that it is also possible to use implicit coercion in switch statements:
+
+State switchState(State st) {
+    switch (st) {
+        case 'up':
+            return State.down // explicit constant
+        case 'down':
+            return 'up' // implicit coercion for return types
+    }
+}
+in particular, see how the case use string constants. But if you call a method that uses an enum with a String argument, you still have to use an explicit as coercion:
+
+assert switchState('up' as State) == State.down
+assert switchState(State.down) == State.up
+3.5. Custom type coercion
+It is possible for a class to define custom coercion strategies by implementing the asType method. Custom coercion is invoked using the as operator and is never implicit. As an example, imagine you defined two classes, Polar and Cartesian, like in the following example:
+
+class Polar {
+    double r
+    double phi
+}
+class Cartesian {
+   double x
+   double y
+}
+And that you want to convert from polar coordinates to cartesian coordinates. One way of doing this is to define the asType method in the Polar class:
+
+def asType(Class target) {
+    if (Cartesian==target) {
+        return new Cartesian(x: r*cos(phi), y: r*sin(phi))
+    }
+}
+which allows you to use the as coercion operator:
+
+def sigma = 1E-16
+def polar = new Polar(r:1.0,phi:PI/2)
+def cartesian = polar as Cartesian
+assert abs(cartesian.x-sigma) < sigma
+Putting it all together, the Polar class looks like this:
+
+class Polar {
+    double r
+    double phi
+    def asType(Class target) {
+        if (Cartesian==target) {
+            return new Cartesian(x: r*cos(phi), y: r*sin(phi))
+        }
+    }
+}
+but it is also possible to define asType outside of the Polar class, which can be practical if you want to define custom coercion strategies for "closed" classes or classes for which you don’t own the source code, for example using a metaclass:
+
+Polar.metaClass.asType = { Class target ->
+    if (Cartesian==target) {
+        return new Cartesian(x: r*cos(phi), y: r*sin(phi))
+    }
+}
+3.6. Class literals vs variables and the as operator
+Using the as keyword is only possible if you have a static reference to a class, like in the following code:
+
+interface Greeter {
+    void greet()
+}
+def greeter = { println 'Hello, Groovy!' } as Greeter // Greeter is known statically
+greeter.greet()
+But what if you get the class by reflection, for example by calling Class.forName?
+
+Class clazz = Class.forName('Greeter')
+Trying to use the reference to the class with the as keyword would fail:
+
+greeter = { println 'Hello, Groovy!' } as clazz
+// throws:
+// unable to resolve class clazz
+// @ line 9, column 40.
+//   greeter = { println 'Hello, Groovy!' } as clazz
+It is failing because the as keyword only works with class literals. Instead, you need to call the asType method:
+
+greeter = { println 'Hello, Groovy!' }.asType(clazz)
+greeter.greet()
+4. Optionality
+4.1. Optional parentheses
+Method calls can omit the parentheses if there is at least one parameter and there is no ambiguity:
+
+println 'Hello World'
+def maximum = Math.max 5, 10
+Parentheses are required for method calls without parameters or ambiguous method calls:
+
+println()
+println(Math.max(5, 10))
+4.2. Optional semicolons
+In Groovy semicolons at the end of the line can be omitted, if the line contains only a single statement.
+
+This means that:
+
+assert true;
+can be more idiomatically written as:
+
+assert true
+Multiple statements in a line require semicolons to separate them:
+
+boolean a = true; assert a
+4.3. Optional return keyword
+In Groovy, the last expression evaluated in the body of a method or a closure is returned. This means that the return keyword is optional.
+
+int add(int a, int b) {
+    return a+b
+}
+assert add(1, 2) == 3
+Can be shortened to:
+
+int add(int a, int b) {
+    a+b
+}
+assert add(1, 2) == 3
+4.4. Optional public keyword
+By default, Groovy classes and methods are public. Therefore this class:
+
+public class Server {
+    public String toString() { "a server" }
+}
+is identical to this class:
+
+class Server {
+    String toString() { "a server" }
+}
+5. The Groovy Truth
+Groovy decides whether a expression is true or false by applying the rules given below.
+
+5.1. Boolean expressions
+True if the corresponding Boolean value is true.
+
+assert true
+assert !false
+5.2. Collections and Arrays
+Non-empty Collections and arrays are true.
+
+assert [1, 2, 3]
+assert ![]
+5.3. Matchers
+True if the Matcher has at least one match.
+
+assert ('a' =~ /a/)
+assert !('a' =~ /b/)
+5.4. Iterators and Enumerations
+Iterators and Enumerations with further elements are coerced to true.
+
+assert [0].iterator()
+assert ![].iterator()
+Vector v = [0] as Vector
+Enumeration enumeration = v.elements()
+assert enumeration
+enumeration.nextElement()
+assert !enumeration
+5.5. Maps
+Non-empty Maps are evaluated to true.
+
+assert ['one' : 1]
+assert ![:]
+5.6. Strings
+Non-empty Strings, GStrings and CharSequences are coerced to true.
+
+assert 'a'
+assert !''
+def nonEmpty = 'a'
+assert "$nonEmpty"
+def empty = ''
+assert !"$empty"
+5.7. Numbers
+Non-zero numbers are true.
+
+assert 1
+assert 3.5
+assert !0
+5.8. Object References
+Non-null object references are coerced to true.
+
+assert new Object()
+assert !null
+5.9. Customizing the truth with asBoolean() methods
+In order to customize whether groovy evaluates your object to true or false implement the asBoolean() method:
+
+class Color {
+    String name
+
+    boolean asBoolean(){
+        name == 'green' ? true : false
+    }
+}
+Groovy will call this method to coerce your object to a boolean value, e.g.:
+
+assert new Color(name: 'green')
+assert !new Color(name: 'red')
+6. Typing
+6.1. Optional typing
+Optional typing is the idea that a program can work even if you don’t put an explicit type on a variable. Being a dynamic language, Groovy naturally implements that feature, for example when you declare a variable:
+
+String aString = 'foo'                      
+assert aString.toUpperCase()                
+foo is declared using an explicit type, String
+we can call the toUpperCase method on a String
+Groovy will let you write this instead:
+
+def aString = 'foo'                         
+assert aString.toUpperCase()                
+foo is declared using def
+we can still call the toUpperCase method, because the type of aString is resolved at runtime
+So it doesn’t matter that you use an explicit type here. It is in particular interesting when you combine this feature with static type checking, because the type checker performs type inference.
+
+Likewise, Groovy doesn’t make it mandatory to declare the types of a parameter in a method:
+
+String concat(String a, String b) {
+    a+b
+}
+assert concat('foo','bar') == 'foobar'
+can be rewritten using def as both return type and parameter types, in order to take advantage of duck typing, as illustrated in this example:
+
+def concat(def a, def b) {                              
+    a+b
+}
+assert concat('foo','bar') == 'foobar'                  
+assert concat(1,2) == 3                                 
+both the return type and the parameter types use def
+it makes it possible to use the method with String
+but also with int since the plus method is defined
+Using the def keyword here is recommended to describe the intent of a method which is supposed to work on any type, but technically, we could use Object instead and the result would be the same: def is, in Groovy, strictly equivalent to using Object.
+Eventually, the type can be removed altogether from both the return type and the descriptor. But if you want to remove it from the return type, you then need to add an explicit modifier for the method, so that the compiler can make a difference between a method declaration and a method call, like illustrated in this example:
+
+private concat(a,b) {                                   
+    a+b
+}
+assert concat('foo','bar') == 'foobar'                  
+assert concat(1,2) == 3                                 
+if we want to omit the return type, an explicit modifier has to be set.
+it is still possible to use the method with String
+and also with int
+Omitting types is in general considered a bad practice in method parameters or method return types for public APIs. While using def in a local variable is not really a problem because the visibility of the variable is limited to the method itself, while set on a method parameter, def will be converted to Object in the method signature, making it difficult for users to know which is the expected type of the arguments. This means that you should limit this to cases where you are explicitly relying on duck typing.
+6.2. Static type checking
+By default, Groovy performs minimal type checking at compile time. Since it is primarily a dynamic language, most checks that a static compiler would normally do aren’t possible at compile time. A method added via runtime metaprogramming might alter a class or object’s runtime behavior. Let’s illustrate why in the following example:
+
+class Person {                                                          
+    String firstName
+    String lastName
+}
+def p = new Person(firstName: 'Raymond', lastName: 'Devos')             
+assert p.formattedName == 'Raymond Devos'                               
+the Person class only defines two properties, firstName and lastName
+we can create an instance of Person
+and call a method named formattedName
+It is quite common in dynamic languages for code such as the above example not to throw any error. How can this be? In Java, this would typically fail at compile time. However, in Groovy, it will not fail at compile time, and if coded correctly, will also not fail at runtime. In fact, to make this work at runtime, one possibility is to rely on runtime metaprogramming. So just adding this line after the declaration of the Person class is enough:
+
+Person.metaClass.getFormattedName = { "$delegate.firstName $delegate.lastName" }
+This means that in general, in Groovy, you can’t make any assumption about the type of an object beyond its declaration type, and even if you know it, you can’t determine at compile time what method will be called, or which property will be retrieved. It has a lot of interest, going from writing DSLs to testing, which is discussed in other sections of this manual.
+
+However, if your program doesn’t rely on dynamic features and that you come from the static world (in particular, from a Java mindset), not catching such "errors" at compile time can be surprising. As we have seen in the previous example, the compiler cannot be sure this is an error. To make it aware that it is, you have to explicitly instruct the compiler that you are switching to a type checked mode. This can be done by annotating a class or a method with @groovy.lang.TypeChecked.
+
+When type checking is activated, the compiler performs much more work:
+
+type inference is activated, meaning that even if you use def on a local variable for example, the type checker will be able to infer the type of the variable from the assignments
+
+method calls are resolved at compile time, meaning that if a method is not declared on a class, the compiler will throw an error
+
+in general, all the compile time errors that you are used to find in a static language will appear: method not found, property not found, incompatible types for method calls, number precision errors, …​
+
+In this section, we will describe the behavior of the type checker in various situations and explain the limits of using @TypeChecked on your code.
+
+6.2.1. The @TypeChecked annotation
+Activating type checking at compile time
+The groovy.lang.TypeChecked annotation enabled type checking. It can be placed on a class:
+
+@groovy.transform.TypeChecked
+class Calculator {
+    int sum(int x, int y) { x+y }
+}
+Or on a method:
+
+class Calculator {
+    @groovy.transform.TypeChecked
+    int sum(int x, int y) { x+y }
+}
+In the first case, all methods, properties, fields, inner classes, …​ of the annotated class will be type checked, whereas in the second case, only the method and potential closures or anonymous inner classes that it contains will be type checked.
+
+Skipping sections
+The scope of type checking can be restricted. For example, if a class is type checked, you can instruct the type checker to skip a method by annotating it with @TypeChecked(TypeCheckingMode.SKIP):
+
+import groovy.transform.TypeChecked
+import groovy.transform.TypeCheckingMode
+
+@TypeChecked                                        
+class GreetingService {
+    String greeting() {                             
+        doGreet()
+    }
+
+    @TypeChecked(TypeCheckingMode.SKIP)             
+    private String doGreet() {
+        def b = new SentenceBuilder()
+        b.Hello.my.name.is.John                     
+        b
+    }
+}
+def s = new GreetingService()
+assert s.greeting() == 'Hello my name is John'
+the GreetingService class is marked as type checked
+so the greeting method is automatically type checked
+but doGreet is marked with SKIP
+the type checker doesn’t complain about missing properties here
+In the previous example, SentenceBuilder relies on dynamic code. There’s no real Hello method or property, so the type checker would normally complain and compilation would fail. Since the method that uses the builder is marked with TypeCheckingMode.SKIP, type checking is skipped for this method, so the code will compile, even if the rest of the class is type checked.
+
+The following sections describe the semantics of type checking in Groovy.
+
+6.2.2. Type checking assignments
+An object o of type A can be assigned to a variable of type T if and only if:
+
+T equals A
+
+Date now = new Date()
+or T is one of String, boolean, Boolean or Class
+
+String s = new Date() // implicit call to toString
+Boolean boxed = 'some string'       // Groovy truth
+boolean prim = 'some string'        // Groovy truth
+Class clazz = 'java.lang.String'    // class coercion
+or o is null and T is not a primitive type
+
+String s = null         // passes
+int i = null            // fails
+or T is an array and A is an array and the component type of A is assignable to the component type of T
+
+int[] i = new int[4]        // passes
+int[] i = new String[4]     // fails
+or T is an array and A is a list and the component type of A is assignable to the component type of T
+
+int[] i = [1,2,3]               // passes
+int[] i = [1,2, new Date()]     // fails
+or T is a superclass of A
+
+AbstractList list = new ArrayList()     // passes
+LinkedList list = new ArrayList()       // fails
+or T is an interface implemented by A
+
+List list = new ArrayList()             // passes
+RandomAccess list = new LinkedList()    // fails
+or T or A are a primitive type and their boxed types are assignable
+
+int i = 0
+Integer bi = 1
+int x = new Integer(123)
+double d = new Float(5f)
+or T extends groovy.lang.Closure and A is a SAM-type (single abstract method type)
+
+Runnable r = { println 'Hello' }
+interface SAMType {
+    int doSomething()
+}
+SAMType sam = { 123 }
+assert sam.doSomething() == 123
+abstract class AbstractSAM {
+    int calc() { 2* value() }
+    abstract int value()
+}
+AbstractSAM c = { 123 }
+assert c.calc() == 246
+or T and A derive from java.lang.Number and conform to the following table
+
+Table 1. Number types (java.lang.XXX)
+T	A	Examples
+Double
+
+Any but BigDecimal or BigInteger
+
+Double d1 = 4d
+Double d2 = 4f
+Double d3 = 4l
+Double d4 = 4i
+Double d5 = (short) 4
+Double d6 = (byte) 4
+Float
+
+Any type but BigDecimal, BigInteger or Double
+
+Float f1 = 4f
+Float f2 = 4l
+Float f3 = 4i
+Float f4 = (short) 4
+Float f5 = (byte) 4
+Long
+
+Any type but BigDecimal, BigInteger, Double or Float
+
+Long l1 = 4l
+Long l2 = 4i
+Long l3 = (short) 4
+Long l4 = (byte) 4
+Integer
+
+Any type but BigDecimal, BigInteger, Double, Float or Long
+
+Integer i1 = 4i
+Integer i2 = (short) 4
+Integer i3 = (byte) 4
+Short
+
+Any type but BigDecimal, BigInteger, Double, Float, Long or Integer
+
+Short s1 = (short) 4
+Short s2 = (byte) 4
+Byte
+
+Byte
+
+Byte b1 = (byte) 4
+6.2.3. List and map constructors
+In addition to the assignment rules above, if an assignment is deemed invalid, in type checked mode, a list literal or a map literal A can be assigned to a variable of type T if:
+
+the assignment is a variable declaration and A is a list literal and T has a constructor whose parameters match the types of the elements in the list literal
+
+the assignment is a variable declaration and A is a map literal and T has a no-arg constructor and a property for each of the map keys
+
+For example, instead of writing:
+
+@groovy.transform.TupleConstructor
+class Person {
+    String firstName
+    String lastName
+}
+Person classic = new Person('Ada','Lovelace')
+You can use a "list constructor":
+
+Person list = ['Ada','Lovelace']
+or a "map constructor":
+
+Person map = [firstName:'Ada', lastName:'Lovelace']
+If you use a map constructor, additional checks are done on the keys of the map to check if a property of the same name is defined. For example, the following will fail at compile time:
+
+@groovy.transform.TupleConstructor
+class Person {
+    String firstName
+    String lastName
+}
+Person map = [firstName:'Ada', lastName:'Lovelace', age: 24]     
+The type checker will throw an error No such property: age for class: Person at compile time
+6.2.4. Method resolution
+In type checked mode, methods are resolved at compile time. Resolution works by name and arguments. The return type is irrelevant to method selection. Types of arguments are matched against the types of the parameters following those rules:
+
+An argument o of type A can be used for a parameter of type T if and only if:
+
+T equals A
+
+int sum(int x, int y) {
+    x+y
+}
+assert sum(3,4) == 7
+or T is a String and A is a GString
+
+String format(String str) {
+    "Result: $str"
+}
+assert format("${3+4}") == "Result: 7"
+or o is null and T is not a primitive type
+
+String format(int value) {
+    "Result: $value"
+}
+assert format(7) == "Result: 7"
+format(null)           // fails
+or T is an array and A is an array and the component type of A is assignable to the component type of T
+
+String format(String[] values) {
+    "Result: ${values.join(' ')}"
+}
+assert format(['a','b'] as String[]) == "Result: a b"
+format([1,2] as int[])              // fails
+or T is a superclass of A
+
+String format(AbstractList list) {
+    list.join(',')
+}
+format(new ArrayList())              // passes
+String format(LinkedList list) {
+    list.join(',')
+}
+format(new ArrayList())              // fails
+or T is an interface implemented by A
+
+String format(List list) {
+    list.join(',')
+}
+format(new ArrayList())                  // passes
+String format(RandomAccess list) {
+    'foo'
+}
+format(new LinkedList())                 // fails
+or T or A are a primitive type and their boxed types are assignable
+
+int sum(int x, Integer y) {
+    x+y
+}
+assert sum(3, new Integer(4)) == 7
+assert sum(new Integer(3), 4) == 7
+assert sum(new Integer(3), new Integer(4)) == 7
+assert sum(new Integer(3), 4) == 7
+or T extends groovy.lang.Closure and A is a SAM-type (single abstract method type)
+
+interface SAMType {
+    int doSomething()
+}
+int twice(SAMType sam) { 2*sam.doSomething() }
+assert twice { 123 } == 246
+abstract class AbstractSAM {
+    int calc() { 2* value() }
+    abstract int value()
+}
+int eightTimes(AbstractSAM sam) { 4*sam.calc() }
+assert eightTimes { 123 } == 984
+or T and A derive from java.lang.Number and conform to the same rules as assignment of numbers
+
+If a method with the appropriate name and arguments is not found at compile time, an error is thrown. The difference with "normal" Groovy is illustrated in the following example:
+
+class MyService {
+    void doSomething() {
+        printLine 'Do something'            
+    }
+}
+printLine is an error, but since we’re in a dynamic mode, the error is not caught at compile time
+The example above shows a class that Groovy will be able to compile. However, if you try to create an instance of MyService and call the doSomething method, then it will fail at runtime, because printLine doesn’t exist. Of course, we already showed how Groovy could make this a perfectly valid call, for example by catching MethodMissingException or implementing a custom meta-class, but if you know you’re not in such a case, @TypeChecked comes handy:
+
+@groovy.transform.TypeChecked
+class MyService {
+    void doSomething() {
+        printLine 'Do something'            
+    }
+}
+printLine is this time a compile-time error
+Just adding @TypeChecked will trigger compile time method resolution. The type checker will try to find a method printLine accepting a String on the MyService class, but cannot find one. It will fail compilation with the following message:
+
+Cannot find matching method MyService#printLine(java.lang.String)
+
+It is important to understand the logic behind the type checker: it is a compile-time check, so by definition, the type checker is not aware of any kind of runtime metaprogramming that you do. This means that code which is perfectly valid without @TypeChecked will not compile anymore if you activate type checking. This is in particular true if you think of duck typing:
+class Duck {
+    void quack() {              
+        println 'Quack!'
+    }
+}
+class QuackingBird {
+    void quack() {              
+        println 'Quack!'
+    }
+}
+@groovy.transform.TypeChecked
+void accept(quacker) {
+    quacker.quack()             
+}
+accept(new Duck())              
+we define a Duck class which defines a quack method
+we define another QuackingBird class which also defines a quack method
+quacker is loosely typed, so since the method is @TypeChecked, we will obtain a compile-time error
+even if in non type-checked Groovy, this would have passed
+There are possible workarounds, like introducing an interface, but basically, by activating type checking, you gain type safety but you loose some features of the language. Hopefully, Groovy introduces some features like flow typing to reduce the gap between type-checked and non type-checked Groovy.
+
+6.2.5. Type inference
+Principles
+When code is annotated with @TypeChecked, the compiler performs type inference. It doesn’t simply rely on static types, but also uses various techniques to infer the types of variables, return types, literals, …​ so that the code remains as clean as possible even if you activate the type checker.
+
+The simplest example is inferring the type of a variable:
+
+def message = 'Welcome to Groovy!'              
+println message.toUpperCase()                   
+println message.upper() // compile time error   
+a variable is declared using the def keyword
+calling toUpperCase is allowed by the type checker
+calling upper will fail at compile time
+The reason the call to toUpperCase works is because the type of message was inferred as being a String.
+
+Variables vs fields in type inference
+It is worth noting that although the compiler performs type inference on local variables, it does not perform any kind of type inference on fields, always falling back to the declared type of a field. To illustrate this, let’s take a look at this example:
+
+class SomeClass {
+    def someUntypedField                                                                
+    String someTypedField                                                               
+
+    void someMethod() {
+        someUntypedField = '123'                                                        
+        someUntypedField = someUntypedField.toUpperCase()  // compile-time error        
+    }
+
+    void someSafeMethod() {
+        someTypedField = '123'                                                          
+        someTypedField = someTypedField.toUpperCase()                                   
+    }
+
+    void someMethodUsingLocalVariable() {
+        def localVariable = '123'                                                       
+        someUntypedField = localVariable.toUpperCase()                                  
+    }
+}
+someUntypedField uses def as a declaration type
+someTypedField uses String as a declaration type
+we can assign anything to someUntypedField
+yet calling toUpperCase fails at compile time because the field is not typed properly
+we can assign a String to a field of type String
+and this time toUpperCase is allowed
+if we assign a String to a local variable
+then calling toUpperCase is allowed on the local variable
+Why such a difference? The reason is thread safety. At compile time, we can’t make any guarantee about the type of a field. Any thread can access any field at any time and between the moment a field is assigned a variable of some type in a method and the time is is used the line after, another thread may have changed the contents of the field. This is not the case for local variables: we know if they "escape" or not, so we can make sure that the type of a variable is constant (or not) over time. Note that even if a field is final, the JVM makes no guarantee about it, so the type checker doesn’t behave differently if a field is final or not.
+
+This is one of the reasons why we recommend to use typed fields. While using def for local variables is perfectly fine thanks to type inference, this is not the case for fields, which also belong to the public API of a class, hence the type is important.
+Collection literal type inference
+Groovy provides a syntax for various type literals. There are three native collection literals in Groovy:
+
+lists, using the [] literal
+
+maps, using the [:] literal
+
+ranges, using from..to (inclusive) and from..<to (exclusive)
+
+The inferred type of a literal depends on the elements of the literal, as illustrated in the following table:
+
+Literal	Inferred type
+def list = []
+java.util.List
+
+def list = ['foo','bar']
+java.util.List<String>
+
+def list = ["${foo}","${bar}"]
+java.util.List<GString> be careful, a GString is not a String!
+
+def map = [:]
+java.util.LinkedHashMap
+
+def map1 = [someKey: 'someValue']
+def map2 = ['someKey': 'someValue']
+java.util.LinkedHashMap<String,String>
+
+def map = ["${someKey}": 'someValue']
+java.util.LinkedHashMap<GString,String> be careful, the key is a GString!
+
+def intRange = (0..10)
+groovy.lang.IntRange
+
+def charRange = ('a'..'z')
+groovy.lang.Range<String> : uses the type of the bounds to infer the component type of the range
+
+As you can see, with the noticeable exception of the IntRange, the inferred type makes use of generics types to describe the contents of a collection. In case the collection contains elements of different types, the type checker still performs type inference of the components, but uses the notion of least upper bound.
+
+Least upper bound
+In Groovy, the least upper bound of two types A and B is defined as a type which:
+
+superclass corresponds to the common super class of A and B
+
+interfaces correspond to the interfaces implemented by both A and B
+
+if A or B is a primitive type and that A isn’t equal to B, the least upper bound of A and B is the least upper bound of their wrapper types
+
+If A and B only have one (1) interface in common and that their common superclass is Object, then the LUB of both is the common interface.
+
+The least upper bound represents the minimal type to which both A and B can be assigned. So for example, if A and B are both String, then the LUB (least upper bound) of both is also String.
+
+class Top {}
+class Bottom1 extends Top {}
+class Bottom2 extends Top {}
+
+assert leastUpperBound(String, String) == String                    
+assert leastUpperBound(ArrayList, LinkedList) == AbstractList       
+assert leastUpperBound(ArrayList, List) == List                     
+assert leastUpperBound(List, List) == List                          
+assert leastUpperBound(Bottom1, Bottom2) == Top                     
+assert leastUpperBound(List, Serializable) == Object                
+the LUB of String and String is String
+the LUB of ArrayList and LinkedList is their common super type, AbstractList
+the LUB of ArrayList and List is their only common interface, List
+the LUB of two identical interfaces is the interface itself
+the LUB of Bottom1 and Bottom2 is their superclass Top
+the LUB of two types which have nothing in common is Object
+In those examples, the LUB is always representable as a normal, JVM supported, type. But Groovy internally represents the LUB as a type which can be more complex, and that you wouldn’t be able to use to define a variable for example. To illustrate this, let’s continue with this example:
+
+interface Foo {}
+class Top {}
+class Bottom extends Top implements Serializable, Foo {}
+class SerializableFooImpl implements Serializable, Foo {}
+What is the least upper bound of Bottom and SerializableFooImpl? They don’t have a common super class (apart from Object), but they do share 2 interfaces (Serializable and Foo), so their least upper bound is a type which represents the union of two interfaces (Serializable and Foo). This type cannot be defined in the source code, yet Groovy knows about it.
+
+In the context of collection type inference (and generic type inference in general), this becomes handy, because the type of the components is inferred as the least upper bound. We can illustrate why this is important in the following example:
+
+interface Greeter { void greet() }                  
+interface Salute { void salute() }                  
+
+class A implements Greeter, Salute {                
+    void greet() { println "Hello, I'm A!" }
+    void salute() { println "Bye from A!" }
+}
+class B implements Greeter, Salute {                
+    void greet() { println "Hello, I'm B!" }
+    void salute() { println "Bye from B!" }
+    void exit() { println 'No way!' }               
+}
+def list = [new A(), new B()]                       
+list.each {
+    it.greet()                                      
+    it.salute()                                     
+    it.exit()                                       
+}
+the Greeter interface defines a single method, greet
+the Salute interface defines a single method, salute
+class A implements both Greeter and Salute but there’s no explicit interface extending both
+same for B
+but B defines an additional exit method
+the type of list is inferred as "list of the LUB of A and `B`"
+so it is possible to call greet which is defined on both A and B through the Greeter interface
+and it is possible to call salute which is defined on both A and B through the Salute interface
+yet calling exit is a compile time error because it doesn’t belong to the LUB of A and B (only defined in B)
+The error message will look like:
+
+[Static type checking] - Cannot find matching method Greeter or Salute#exit()
+which indicates that the exit method is neither defines on Greeter nor Salute, which are the two interfaces defined in the least upper bound of A and B.
+
+instanceof inference
+In normal, non type checked, Groovy, you can write things like:
+
+class Greeter {
+    String greeting() { 'Hello' }
+}
+
+void doSomething(def o) {
+    if (o instanceof Greeter) {     
+        println o.greeting()        
+    }
+}
+
+doSomething(new Greeter())
+guard the method call with an instanceof check
+make the call
+The method call works because of dynamic dispatch (the method is selected at runtime). The equivalent code in Java would require to cast o to a Greeter before calling the greeting method, because methods are selected at compile time:
+
+if (o instanceof Greeter) {
+    System.out.println(((Greeter)o).greeting());
+}
+However, in Groovy, even if you add @TypeChecked (and thus activate type checking) on the doSomething method, the cast is not necessary. The compiler embeds instanceof inference that makes the cast optional.
+
+Flow typing
+Flow typing is an important concept of Groovy in type checked mode and an extension of type inference. The idea is that the compiler is capable of inferring the type of variables in the flow of the code, not just at initialization:
+
+@groovy.transform.TypeChecked
+void flowTyping() {
+    def o = 'foo'                       
+    o = o.toUpperCase()                 
+    o = 9d                              
+    o = Math.sqrt(o)                    
+}
+first, o is declared using def and assigned a String
+the compiler inferred that o is a String, so calling toUpperCase is allowed
+o is reassigned with a double
+calling Math.sqrt passes compilation because the compiler knows that at this point, o is a double
+So the type checker is aware of the fact that the concrete type of a variable is different over time. In particular, if you replace the last assignment with:
+
+o = 9d
+o = o.toUpperCase()
+The type checker will now fail at compile time, because it knows that o is a double when toUpperCase is called, so it’s a type error.
+
+It is important to understand that it is not the fact of declaring a variable with def that triggers type inference. Flow typing works for any variable of any type. Declaring a variable with an explicit type only constrains what you can assign to the variable:
+
+@groovy.transform.TypeChecked
+void flowTypingWithExplicitType() {
+    List list = ['a','b','c']           
+    list = list*.toUpperCase()          
+    list = 'foo'                        
+}
+list is declared as an unchecked List and assigned a list literal of `String`s
+this line passes compilation because of flow typing: the type checker knows that list is at this point a List<String>
+but you can’t assign a String to a List so this is a type checking error
+You can also note that even if the variable is declared without generics information, the type checker knows what is the component type. Therefore, such code would fail compilation:
+
+@groovy.transform.TypeChecked
+void flowTypingWithExplicitType() {
+    List list = ['a','b','c']           
+    list.add(1)                         
+}
+list is inferred as List<String>
+so adding an int to a List<String> is a compile-time error
+Fixing this requires adding an explicit generic type to the declaration:
+
+@groovy.transform.TypeChecked
+void flowTypingWithExplicitType() {
+    List<? extends Serializable> list = []                      
+    list.addAll(['a','b','c'])                                  
+    list.add(1)                                                 
+}
+list declared as List<? extends Serializable> and initialized with an empty list
+elements added to the list conform to the declaration type of the list
+so adding an int to a List<? extends Serializable> is allowed
+Flow typing has been introduced to reduce the difference in semantics between classic and static Groovy. In particular, consider the behavior of this code in Java:
+
+public Integer compute(String str) {
+    return str.length();
+}
+public String compute(Object o) {
+    return "Nope";
+}
+// ...
+Object string = "Some string";          
+Object result = compute(string);        
+System.out.println(result);             
+o is declared as an Object and assigned a String
+we call the compute method with o
+and print the result
+In Java, this code will output Nope, because method selection is done at compile time and based on the declared types. So even if o is a String at runtime, it is still the Object version which is called, because o has been declared as an Object. To be short, in Java, declared types are most important, be it variable types, parameter types or return types.
+
+In Groovy, we could write:
+
+int compute(String string) { string.length() }
+String compute(Object o) { "Nope" }
+Object o = 'string'
+def result = compute(o)
+println result
+But this time, it will return 6, because the method which is chosen is chosen at runtime, based on the actual argument types. So at runtime, o is a String so the String variant is used. Note that this behavior has nothing to do with type checking, it’s the way Groovy works in general: dynamic dispatch.
+
+In type checked Groovy, we want to make sure the type checker selects the same method at compile time, that the runtime would choose. It is not possible in general, due to the semantics of the language, but we can make things better with flow typing. With flow typing, o is inferred as a String when the compute method is called, so the version which takes a String and returns an int is chosen. This means that we can infer the return type of the method to be an int, and not a String. This is important for subsequent calls and type safety.
+
+So in type checked Groovy, flow typing is a very important concept, which also implies that if @TypeChecked is applied, methods are selected based on the inferred types of the arguments, not on the declared types. This doesn’t ensure 100% type safety, because the type checker may select a wrong method, but it ensures the closest semantics to dynamic Groovy.
+
+Advanced type inference
+A combination of flow typing and least upper bound inference is used to perform advanced type inference and ensure type safety in multiple situations. In particular, program control structures are likely to alter the inferred type of a variable:
+
+class Top {
+   void methodFromTop() {}
+}
+class Bottom extends Top {
+   void methodFromBottom() {}
+}
+def o
+if (someCondition) {
+    o = new Top()                               
+} else {
+    o = new Bottom()                            
+}
+o.methodFromTop()                               
+o.methodFromBottom()  // compilation error      
+if someCondition is true, o is assigned a Top
+if someCondition is false, o is assigned a Bottom
+calling methodFromTop is safe
+but calling methodFromBottom is not, so it’s a compile time error
+When the type checker visits an if/else control structure, it checks all variables which are assigned in if/else branches and computes the least upper bound of all assignments. This type is the type of the inferred variable after the if/else block, so in this example, o is assigned a Top in the if branch and a Bottom in the else branch. The LUB of those is a Top, so after the conditional branches, the compiler infers o as being a Top. Calling methodFromTop will therefore be allowed, but not methodFromBottom.
+
+The same reasoning exists with closures and in particular closure shared variables. A closure shared variable is a variable which is defined outside of a closure, but used inside a closure, as in this example:
+
+def text = 'Hello, world!'                          
+def closure = {
+    println text                                    
+}
+a variable named text is declared
+text is used from inside a closure. It is a closure shared variable.
+Groovy allows developers to use those variables without requiring them to be final. This means that a closure shared variable can be reassigned inside a closure:
+
+String result
+doSomething { String it ->
+    result = "Result: $it"
+}
+result = result?.toUpperCase()
+The problem is that a closure is an independent block of code that can be executed (or not) at any time. In particular, doSomething may be asynchronous, for example. This means that the body of a closure doesn’t belong to the main control flow. For that reason, the type checker also computes, for each closure shared variable, the LUB of all assignments of the variable, and will use that LUB as the inferred type outside of the scope of the closure, like in this example:
+
+class Top {
+   void methodFromTop() {}
+}
+class Bottom extends Top {
+   void methodFromBottom() {}
+}
+def o = new Top()                               
+Thread.start {
+    o = new Bottom()                            
+}
+o.methodFromTop()                               
+o.methodFromBottom()  // compilation error      
+a closure-shared variable is first assigned a Top
+inside the closure, it is assigned a Bottom
+methodFromTop is allowed
+methodFromBottom is a compilation error
+Here, it is clear that when methodFromBottom is called, there’s no guarantee, at compile-time or runtime that the type of o will effectively be a Bottom. There are chances that it will be, but we can’t make sure, because it’s asynchronous. So the type checker will only allow calls on the least upper bound, which is here a Top.
+
+6.2.6. Closures and type inference
+The type checker performs special inference on closures, resulting on additional checks on one side and improved fluency on the other side.
+
+Return type inference
+The first thing that the type checker is capable of doing is inferring the return type of a closure. This is simply illustrated in the following example:
+
+@groovy.transform.TypeChecked
+int testClosureReturnTypeInference(String arg) {
+    def cl = { "Arg: $arg" }                                
+    def val = cl()                                          
+
+    val.length()                                            
+}
+a closure is defined, and it returns a string (more precisely a GString)
+we call the closure and assign the result to a variable
+the type checker inferred that the closure would return a string, so calling length() is allowed
+As you can see, unlike a method which declares its return type explicitly, there’s no need to declare the return type of a closure: its type is inferred from the body of the closure.
+
+Closures vs methods
+It’s worth noting that return type inference is only applicable to closures. While the type checker could do the same on a method, it is in practice not desirable: in general, methods can be overridden and it is not statically possible to make sure that the method which is called is not an overridden version. So flow typing would actually think that a method returns something, while in reality, it could return something else, like illustrated in the following example:
+
+@TypeChecked
+class A {
+    def compute() { 'some string' }             
+    def computeFully() {
+        compute().toUpperCase()                 
+    }
+}
+@TypeChecked
+class B extends A {
+    def compute() { 123 }                       
+}
+class A defines a method compute which effectively returns a String
+this will fail compilation because the return type of compute is def(aka Object)
+class B extends A and redefines compute, this type returning an int
+As you can see, if the type checker relied on the inferred return type of a method, with flow typing, the type checker could determine that it is ok to call toUpperCase. It is in fact an error, because a subclass can override compute and return a different object. Here, B#compute returns an int, so someone calling computeFully on an instance of B would see a runtime error. The compiler prevents this from happening by using the declared return type of methods instead of the inferred return type.
+
+For consistency, this behavior is the same for every method, even if they are static or final.
+
+Parameter type inference
+In addition to the return type, it is possible for a closure to infer its parameter types from the context. There are two ways for the compiler to infer the parameter types:
+
+through implicit SAM type coercion
+
+through API metadata
+
+To illustrate this, lets start with an example that will fail compilation due to the inability for the type checker to infer the parameter types:
+
+class Person {
+    String name
+    int age
+}
+
+void inviteIf(Person p, Closure<Boolean> predicate) {           
+    if (predicate.call(p)) {
+        // send invite
+        // ...
+    }
+}
+
+@groovy.transform.TypeChecked
+void failCompilation() {
+    Person p = new Person(name: 'Gerard', age: 55)
+    inviteIf(p) {                                               
+        it.age >= 18 // No such property: age                   
+    }
+}
+the inviteIf method accepts a Person and a Closure
+we call it with a Person and a Closure
+yet it is not statically known as being a Person and compilation fails
+In this example, the closure body contains it.age. With dynamic, not type checked code, this would work, because the type of it would be a Person at runtime. Unfortunately, at compile-time, there’s no way to know what is the type of it, just by reading the signature of inviteIf.
+
+Explicit closure parameters
+To be short, the type checker doesn’t have enough contextual information on the inviteIf method to determine statically the type of it. This means that the method call needs to be rewritten like this:
+
+inviteIf(p) { Person it ->                                  
+    it.age >= 18
+}
+the type of it needs to be declared explicitly
+By explicitly declaring the type of the it variable, you can workaround the problem and make this code statically checked.
+
+Parameters inferred from single-abstract method types
+For an API or framework designer, there are two ways to make this more elegant for users, so that they don’t have to declare an explicit type for the closure parameters. The first one, and easiest, is to replace the closure with a SAM type:
+
+interface Predicate<On> { boolean apply(On e) }                 
+
+void inviteIf(Person p, Predicate<Person> predicate) {          
+    if (predicate.apply(p)) {
+        // send invite
+        // ...
+    }
+}
+
+@groovy.transform.TypeChecked
+void passesCompilation() {
+    Person p = new Person(name: 'Gerard', age: 55)
+
+    inviteIf(p) {                                               
+        it.age >= 18                                            
+    }
+}
+declare a SAM interface with an apply method
+inviteIf now uses a Predicate<Person> instead of a Closure<Boolean>
+there’s no need to declare the type of the it variable anymore
+it.age compiles properly, the type of it is inferred from the Predicate#apply method signature
+By using this technique, we leverage the automatic coercion of closures to SAM types feature of Groovy. The question whether you should use a SAM type or a Closure really depends on what you need to do. In a lot of cases, using a SAM interface is enough, especially if you consider functional interfaces as they are found in Java 8. However, closures provide features that are not accessible to functional interfaces. In particular, closures can have a delegate, and owner and can be manipulated as objects (for example, cloned, serialized, curried, …​) before being called. They can also support multiple signatures (polymorphism). So if you need that kind of manipulation, it is preferable to switch to the most advanced type inference annotations which are described below.
+The original issue that needs to be solved when it comes to closure parameter type inference, that is to say, statically determining the types of the arguments of a closure without having to have them explicitly declared, is that the Groovy type system inherits the Java type system, which is insufficient to describe the types of the arguments.
+
+The @ClosureParams annotation
+Groovy provides an annotation, @ClosureParams which is aimed at completing type information. This annotation is primarily aimed at framework and API developers who want to extend the capabilities of the type checker by providing type inference metadata. This is important if your library makes use of closures and that you want the maximum level of tooling support too.
+
+Let’s illustrate this by fixing the original example, introducing the @ClosureParams annotation:
+
+import groovy.transform.stc.ClosureParams
+import groovy.transform.stc.FirstParam
+void inviteIf(Person p, @ClosureParams(FirstParam) Closure<Boolean> predicate) {        
+    if (predicate.call(p)) {
+        // send invite
+        // ...
+    }
+}
+inviteIf(p) {                                                                       
+    it.age >= 18
+}
+the closure parameter is annotated with @ClosureParams
+it’s not necessary to use an explicit type for it, which is inferred
+The @ClosureParams annotation minimally accepts one argument, which is named a type hint. A type hint is a class which is responsible for completing type information at compile time for the closure. In this example, the type hint being used is groovy.transform.stc.FirstParam which indicated to the type checker that the closure will accept one parameter whose type is the type of the first parameter of the method. In this case, the first parameter of the method is Person, so it indicates to the type checker that the first parameter of the closure is in fact a Person.
+
+A second optional argument is named options. It’s semantics depend on the type hint class. Groovy comes with various bundled type hints, illustrated in the table below:
+
+Table 2. Predefined type hints
+Type hint	Polymorphic?	Description and examples
+FirstParam
+SecondParam
+ThirdParam
+
+No
+
+The first (resp. second, third) parameter type of the method
+
+import groovy.transform.stc.FirstParam
+void doSomething(String str, @ClosureParams(FirstParam) Closure c) {
+    c(str)
+}
+doSomething('foo') { println it.toUpperCase() }
+import groovy.transform.stc.SecondParam
+void withHash(String str, int seed, @ClosureParams(SecondParam) Closure c) {
+    c(31*str.hashCode()+seed)
+}
+withHash('foo', (int)System.currentTimeMillis()) {
+    int mod = it%2
+}
+import groovy.transform.stc.ThirdParam
+String format(String prefix, String postfix, String o, @ClosureParams(ThirdParam) Closure c) {
+    "$prefix${c(o)}$postfix"
+}
+assert format('foo', 'bar', 'baz') {
+    it.toUpperCase()
+} == 'fooBAZbar'
+FirstParam.FirstGenericType
+SecondParam.FirstGenericType
+ThirdParam.FirstGenericType
+
+No
+
+The first generic type of the first (resp. second, third) parameter of the method
+
+import groovy.transform.stc.FirstParam
+public <T> void doSomething(List<T> strings, @ClosureParams(FirstParam.FirstGenericType) Closure c) {
+    strings.each {
+        c(it)
+    }
+}
+doSomething(['foo','bar']) { println it.toUpperCase() }
+doSomething([1,2,3]) { println(2*it) }
+Variants for SecondGenericType and ThirdGenericType exist for all FirstParam, SecondParam and ThirdParam type hints.
+
+SimpleType
+
+No
+
+A type hint for which the type of closure parameters comes from the options string.
+
+import groovy.transform.stc.SimpleType
+public void doSomething(@ClosureParams(value=SimpleType,options=['java.lang.String','int']) Closure c) {
+    c('foo',3)
+}
+doSomething { str, len ->
+    assert str.length() == len
+}
+This type hint supports a single signature and each of the parameter is specified as a value of the options array using a fully-qualified type name or a primitive type.
+
+MapEntryOrKeyValue
+
+Yes
+
+A dedicated type hint for closures that either work on a Map.Entry single parameter, or two parameters corresponding to the key and the value.
+
+import groovy.transform.stc.MapEntryOrKeyValue
+public <K,V> void doSomething(Map<K,V> map, @ClosureParams(MapEntryOrKeyValue) Closure c) {
+    // ...
+}
+doSomething([a: 'A']) { k,v ->
+    assert k.toUpperCase() == v.toUpperCase()
+}
+doSomething([abc: 3]) { e ->
+    assert e.key.length() == e.value
+}
+This type hint requires that the first argument is a Map type, and infers the closure parameter types from the map actual key/value types.
+
+FromAbstractTypeMethods
+
+Yes
+
+Infers closure parameter types from the abstract method of some type. A signature is inferred for each abstract method.
+
+import groovy.transform.stc.FromAbstractTypeMethods
+abstract class Foo {
+    abstract void firstSignature(int x, int y)
+    abstract void secondSignature(String str)
+}
+void doSomething(@ClosureParams(value=FromAbstractTypeMethods, options=["Foo"]) Closure cl) {
+    // ...
+}
+doSomething { a, b -> a+b }
+doSomething { s -> s.toUpperCase() }
+If there are multiple signatures like in the example above, the type checker will only be able to infer the types of the arguments if the arity of each method is different. In the example above, firstSignature takes 2 arguments and secondSignature takes 1 argument, so the type checker can infer the argument types based on the number of arguments. But see the optional resolver class attribute discussed next.
+
+FromString
+
+Yes
+
+Infers the closure parameter types from the options argument. The options argument consists of an array of comma-separated non-primitive types. Each element of the array corresponds to a single signature, and each comma in an element separate parameters of the signature. In short, this is the most generic type hint, and each string of the options map is parsed as if it was a signature literal. While being very powerful, this type hint must be avoided if you can because it increases the compilation times due to the necessity of parsing the type signatures.
+
+A single signature for a closure accepting a String:
+
+import groovy.transform.stc.FromString
+void doSomething(@ClosureParams(value=FromString, options=["String","String,Integer"]) Closure cl) {
+    // ...
+}
+doSomething { s -> s.toUpperCase() }
+doSomething { s,i -> s.toUpperCase()*i }
+A polymorphic closure, accepting either a String or a String, Integer:
+
+import groovy.transform.stc.FromString
+void doSomething(@ClosureParams(value=FromString, options=["String","String,Integer"]) Closure cl) {
+    // ...
+}
+doSomething { s -> s.toUpperCase() }
+doSomething { s,i -> s.toUpperCase()*i }
+A polymorphic closure, accepting either a T or a pair T,T:
+
+import groovy.transform.stc.FromString
+public <T> void doSomething(T e, @ClosureParams(value=FromString, options=["T","T,T"]) Closure cl) {
+    // ...
+}
+doSomething('foo') { s -> s.toUpperCase() }
+doSomething('foo') { s1,s2 -> assert s1.toUpperCase() == s2.toUpperCase() }
+Even though you use FirstParam, SecondParam or ThirdParam as a type hint, it doesn’t strictly mean that the argument which will be passed to the closure will be the first (resp. second, third) argument of the method call. It only means that the type of the parameter of the closure will be the same as the type of the first (resp. second, third) argument of the method call.
+In short, the lack of the @ClosureParams annotation on a method accepting a Closure will not fail compilation. If present (and it can be present in Java sources as well as Groovy sources), then the type checker has more information and can perform additional type inference. This makes this feature particularly interesting for framework developers.
+
+A third optional argument is named conflictResolutionStrategy. It can reference a class (extending from ClosureSignatureConflictResolver) that can perform additional resolution of parameter types if more than one are found after initial inference calculations are complete. Groovy comes with the a default type resolver which does nothing, and another which selects the first signature if multiple are found. The resolver is only invoked if more than one signature is found and is by design a post processor. Any statements which need injected typing information must pass one of the parameter signatures determined through type hints. The resolver then picks among the returned candidate signatures.
+
+@DelegatesTo
+The @DelegatesTo annotation is used by the type checker to infer the type of the delegate. It allows the API designer to instruct the compiler what is the type of the delegate and the delegation strategy. The @DelegatesTo annotation is discussed in a specific section.
+
+6.3. Static compilation
+6.3.1. Dynamic vs static
+In the type checking section, we have seen that Groovy provides optional type checking thanks to the @TypeChecked annotation. The type checker runs at compile time and performs a static analysis of dynamic code. The program will behave exactly the same whether type checking has been enabled or not. This means that the @TypeChecked annotation is neutral with regards to the semantics of a program. Even though it may be necessary to add type information in the sources so that the program is considered type safe, in the end, the semantics of the program are the same.
+
+While this may sound fine, there is actually one issue with this: type checking of dynamic code, done at compile time, is by definition only correct if no runtime specific behavior occurs. For example, the following program passes type checking:
+
+class Computer {
+    int compute(String str) {
+        str.length()
+    }
+    String compute(int x) {
+        String.valueOf(x)
+    }
+}
+
+@groovy.transform.TypeChecked
+void test() {
+    def computer = new Computer()
+    computer.with {
+        assert compute(compute('foobar')) =='6'
+    }
+}
+There are two compute methods. One accepts a String and returns an int, the other accepts an int and returns a String. If you compile this, it is considered type safe: the inner compute('foobar') call will return an int, and calling compute on this int will in turn return a String.
+
+Now, before calling test(), consider adding the following line:
+
+Computer.metaClass.compute = { String str -> new Date() }
+Using runtime metaprogramming, we’re actually modifying the behavior of the compute(String) method, so that instead of returning the length of the provided argument, it will return a Date. If you execute the program, it will fail at runtime. Since this line can be added from anywhere, in any thread, there’s absolutely no way for the type checker to statically make sure that no such thing happens. In short, the type checker is vulnerable to monkey patching. This is just one example, but this illustrates the concept that doing static analysis of a dynamic program is inherently wrong.
+
+The Groovy language provides an alternative annotation to @TypeChecked which will actually make sure that the methods which are inferred as being called will effectively be called at runtime. This annotation turns the Groovy compiler into a static compiler, where all method calls are resolved at compile time and the generated bytecode makes sure that this happens: the annotation is @groovy.transform.CompileStatic.
+
+6.3.2. The @CompileStatic annotation
+The @CompileStatic annotation can be added anywhere the @TypeChecked annotation can be used, that is to say on a class or a method. It is not necessary to add both @TypeChecked and @CompileStatic, as @CompileStatic performs everything @TypeChecked does, but in addition triggers static compilation.
+
+Let’s take the example which failed, but this time let’s replace the @TypeChecked annotation with @CompileStatic:
+
+class Computer {
+    int compute(String str) {
+        str.length()
+    }
+    String compute(int x) {
+        String.valueOf(x)
+    }
+}
+
+@groovy.transform.CompileStatic
+void test() {
+    def computer = new Computer()
+    computer.with {
+        assert compute(compute('foobar')) =='6'
+    }
+}
+Computer.metaClass.compute = { String str -> new Date() }
+test()
+This is the only difference. If we execute this program, this time, there is no runtime error. The test method became immune to monkey patching, because the compute methods which are called in its body are linked at compile time, so even if the metaclass of Computer changes, the program still behaves as expected by the type checker.
+
+6.3.3. Key benefits
+There are several benefits of using @CompileStatic on your code:
+
+type safety
+
+immunity to monkey patching
+
+performance improvements
+
+The performance improvements depend on the kind of program you are executing. If it is I/O bound, the difference between statically compiled code and dynamic code is barely noticeable. On highly CPU intensive code, since the bytecode which is generated is very close, if not equal, to the one that Java would produce for an equivalent program, the performance is greatly improved.
+
+Using the invokedynamic version of Groovy, which is accessible to people using JDK 7 and above, the performance of the dynamic code should be very close to the performance of statically compiled code. Sometimes, it can even be faster! There is only one way to determine which version you should choose: measuring. The reason is that depending on your program and the JVM that you use, the performance can be significantly different. In particular, the invokedynamic version of Groovy is very sensitive to the JVM version in use.
+7. Type checking extensions
+7.1. Writing a type checking extension
+7.1.1. Towards a smarter type checker
+Despite being a dynamic language, Groovy can be used with a static type checker at compile time, enabled using the @TypeChecked annotation. In this mode, the compiler becomes more verbose and throws errors for, example, typos, non-existent methods,… This comes with a few limitations though, most of them coming from the fact that Groovy remains inherently a dynamic language. For example, you wouldn’t be able to use type checking on code that uses the markup builder:
+
+def builder = new MarkupBuilder(out)
+builder.html {
+    head {
+        // ...
+    }
+    body {
+        p 'Hello, world!'
+    }
+}
+In the previous example, none of the html, head, body or p methods exist. However if you execute the code, it works because Groovy uses dynamic dispatch and converts those method calls at runtime. In this builder, there’s no limitation about the number of tags that you can use, nor the attributes, which means there is no chance for a type checker to know about all the possible methods (tags) at compile time, unless you create a builder dedicated to HTML for example.
+
+Groovy is a platform of choice when it comes to implement internal DSLs. The flexible syntax, combined with runtime and compile-time metaprogramming capabilities make Groovy an interesting choice because it allows the programmer to focus on the DSL rather than on tooling or implementation. Since Groovy DSLs are Groovy code, it’s easy to have IDE support without having to write a dedicated plugin for example.
+
+In a lot of cases, DSL engines are written in Groovy (or Java) then user code is executed as scripts, meaning that you have some kind of wrapper on top of user logic. The wrapper may consist, for example, in a GroovyShell or GroovyScriptEngine that performs some tasks transparently before running the script (adding imports, applying AST transforms, extending a base script,…). Often, user written scripts come to production without testing because the DSL logic comes to a point where any user may write code using the DSL syntax. In the end, a user may just ignore that what he writes is actually code. This adds some challenges for the DSL implementer, such as securing execution of user code or, in this case, early reporting of errors.
+
+For example, imagine a DSL which goal is to drive a rover on Mars remotely. Sending a message to the rover takes around 15 minutes. If the rover executes the script and fails with an error (say a typo), you have two problems:
+
+first, feedback comes only after 30 minutes (the time needed for the rover to get the script and the time needed to receive the error)
+
+second, some portion of the script has been executed and you may have to change the fixed script significantly (implying that you need to know the current state of the rover…)
+
+Type checking extensions is a mechanism that will allow the developer of a DSL engine to make those scripts safer by applying the same kind of checks that static type checking allows on regular groovy classes.
+
+The principle, here, is to fail early, that is to say fail compilation of scripts as soon as possible, and if possible provide feedback to the user (including nice error messages).
+
+In short, the idea behind type checking extensions is to make the compiler aware of all the runtime metaprogramming tricks that the DSL uses, so that scripts can benefit the same level of compile-time checks as a verbose statically compiled code would have. We will see that you can go even further by performing checks that a normal type checker wouldn’t do, delivering powerful compile-time checks for your users.
+
+7.1.2. The extensions attribute
+The @TypeChecked annotation supports an attribute named extensions. This parameter takes an array of strings corresponding to a list of type checking extensions scripts. Those scripts are found at compile time on classpath. For example, you would write:
+
+@TypeChecked(extensions='/path/to/myextension.groovy')
+void foo() { ...}
+In that case, the foo methods would be type checked with the rules of the normal type checker completed by those found in the myextension.groovy script. Note that while internally the type checker supports multiple mechanisms to implement type checking extensions (including plain old java code), the recommended way is to use those type checking extension scripts.
+
+7.1.3. A DSL for type checking
+The idea behind type checking extensions is to use a DSL to extend the type checker capabilities. This DSL allows you to hook into the compilation process, more specifically the type checking phase, using an "event-driven" API. For example, when the type checker enters a method body, it throws a beforeVisitMethod event that the extension can react to:
+
+beforeVisitMethod { methodNode ->
+ println "Entering ${methodNode.name}"
+}
+Imagine that you have this rover DSL at hand. A user would write:
+
+robot.move 100
+If you have a class defined as such:
+
+class Robot {
+    Robot move(int qt) { this }
+}
+The script can be type checked before being executed using the following script:
+
+def config = new CompilerConfiguration()
+config.addCompilationCustomizers(
+    new ASTTransformationCustomizer(TypeChecked)            
+)
+def shell = new GroovyShell(config)                         
+def robot = new Robot()
+shell.setVariable('robot', robot)
+shell.evaluate(script)                                      
+a compiler configuration adds the @TypeChecked annotation to all classes
+use the configuration in a GroovyShell
+so that scripts compiled using the shell are compiled with @TypeChecked without the user having to add it explicitly
+Using the compiler configuration above, we can apply @TypeChecked transparently to the script. In that case, it will fail at compile time:
+
+[Static type checking] - The variable [robot] is undeclared.
+Now, we will slightly update the configuration to include the ``extensions'' parameter:
+
+config.addCompilationCustomizers(
+    new ASTTransformationCustomizer(
+        TypeChecked,
+        extensions:['robotextension.groovy'])
+)
+Then add the following to your classpath:
+
+robotextension.groovy
+unresolvedVariable { var ->
+    if ('robot'==var.name) {
+        storeType(var, classNodeFor(Robot))
+        handled = true
+    }
+}
+Here, we’re telling the compiler that if an unresolved variable is found and that the name of the variable is robot, then we can make sure that the type of this variable is Robot.
+
+7.1.4. Type checking extensions API
+AST
+The type checking API is a low level API, dealing with the Abstract Syntax Tree. You will have to know your AST well to develop extensions, even if the DSL makes it much easier than just dealing with AST code from plain Java or Groovy.
+
+Events
+The type checker sends the following events, to which an extension script can react:
+
+Event name
+
+setup
+
+Called When
+
+Called after the type checker finished initialization
+
+Arguments
+
+none
+
+Usage
+
+setup {
+    // this is called before anything else
+}
+Can be used to perform setup of your extension
+
+Event name
+
+finish
+
+Called When
+
+Called after the type checker completed type checking
+
+Arguments
+
+none
+
+Usage
+
+finish {
+    // this is after completion
+    // of all type checking
+}
+Can be used to perform additional checks after the type checker has finished its job.
+
+Event name
+
+unresolvedVariable
+
+Called When
+
+Called when the type checker finds an unresolved variable
+
+Arguments
+
+VariableExpression var
+
+Usage
+
+unresolvedVariable { var ->
+    if ('people' == var.name) {
+        storeType(var, classNodeFor(List))
+        handled = true
+    }
+}
+Allows the developer to help the type checker with user-injected variables.
+
+Event name
+
+unresolvedProperty
+
+Called When
+
+Called when the type checker cannot find a property on the receiver
+
+Arguments
+
+PropertyExpression pexp
+
+Usage
+
+unresolvedProperty { pexp ->
+    if ('longueur'==pexp.propertyAsString &&
+        getType(pexp.objectExpression)==classNodeFor(String)) {
+        storeType(pexp,classNodeFor(int))
+        handled = true
+    }
+}
+Allows the developer to handle "dynamic" properties
+
+Event name
+
+unresolvedAttribute
+
+Called When
+
+Called when the type checker cannot find an attribute on the receiver
+
+Arguments
+
+AttributeExpression aex
+
+Usage
+
+unresolvedAttribute { aex ->
+    if (getType(aex.objectExpression)==classNodeFor(String)) {
+        storeType(aex,classNodeFor(String))
+        handled = true
+    }
+}
+Allows the developer to handle missing attributes
+
+Event name
+
+beforeMethodCall
+
+Called When
+
+Called before the type checker starts type checking a method call
+
+Arguments
+
+MethodCall call
+
+Usage
+
+beforeMethodCall { call ->
+    if (isMethodCallExpression(call)
+            && call.methodAsString=='toUpperCase') {
+        addStaticTypeError('Not allowed',call)
+        handled = true
+    }
+}
+Allows you to intercept method calls before the type checker performs its own checks. This is useful if you want to replace the default type checking with a custom one for a limited scope. In that case, you must set the handled flag to true, so that the type checker skips its own checks.
+
+Event name
+
+afterMethodCall
+
+Called When
+
+Called once the type checker has finished type checking a method call
+
+Arguments
+
+MethodCall call
+
+Usage
+
+afterMethodCall { call ->
+    if (getTargetMethod(call).name=='toUpperCase') {
+        addStaticTypeError('Not allowed',call)
+        handled = true
+    }
+}
+Allow you to perform additional checks after the type checker has done its own checks. This is in particular useful if you want to perform the standard type checking tests but also want to ensure additional type safety, for example checking the arguments against each other.Note that afterMethodCall is called even if you did beforeMethodCall and set the handled flag to true.
+
+Event name
+
+onMethodSelection
+
+Called When
+
+Called by the type checker when it finds a method appropriate for a method call
+
+Arguments
+
+Expression expr, MethodNode node
+
+Usage
+
+onMethodSelection { expr, node ->
+    if (node.declaringClass.name == 'java.lang.String') {
+        // calling a method on 'String'
+        // let’s perform additional checks!
+        if (++count>2) {
+            addStaticTypeError("You can use only 2 calls on String in your source code",expr)
+        }
+    }
+}
+The type checker works by inferring argument types of a method call, then chooses a target method. If it finds one that corresponds, then it triggers this event. It is for example interesting if you want to react on a specific method call, such as entering the scope of a method that takes a closure as argument (as in builders).Please note that this event may be thrown for various types of expressions, not only method calls (binary expressions for example).
+
+Event name
+
+methodNotFound
+
+Called When
+
+Called by the type checker when it fails to find an appropriate method for a method call
+
+Arguments
+
+ClassNode receiver, String name, ArgumentListExpression argList, ClassNode[] argTypes,MethodCall call
+
+Usage
+
+methodNotFound { receiver, name, argList, argTypes, call ->
+    // receiver is the inferred type of the receiver
+    // name is the name of the called method
+    // argList is the list of arguments the method was called with
+    // argTypes is the array of inferred types for each argument
+    // call is the method call for which we couldn’t find a target method
+    if (receiver==classNodeFor(String)
+            && name=='longueur'
+            && argList.size()==0) {
+        handled = true
+        return newMethod('longueur', classNodeFor(String))
+    }
+}
+Unlike onMethodSelection, this event is sent when the type checker cannot find a target method for a method call (instance or static). It gives you the chance to intercept the error before it is sent to the user, but also set the target method.For this, you need to return a list of MethodNode. In most situations, you would either return: an empty list, meaning that you didn’t find a corresponding method, a list with exactly one element, saying that there’s no doubt about the target methodIf you return more than one MethodNode, then the compiler would throw an error to the user stating that the method call is ambiguous, listing the possible methods.For convenience, if you want to return only one method, you are allowed to return it directly instead of wrapping it into a list.
+
+Event name
+
+beforeVisitMethod
+
+Called When
+
+Called by the type checker before type checking a method body
+
+Arguments
+
+MethodNode node
+
+Usage
+
+beforeVisitMethod { methodNode ->
+    // tell the type checker we will handle the body by ourselves
+    handled = methodNode.name.startsWith('skip')
+}
+The type checker will call this method before starting to type check a method body. If you want, for example, to perform type checking by yourself instead of letting the type checker do it, you have to set the handled flag to true.This event can also be used to help defining the scope of your extension (for example, applying it only if you are inside method foo).
+
+Event name
+
+afterVisitMethod
+
+Called When
+
+Called by the type checker after type checking a method body
+
+Arguments
+
+MethodNode node
+
+Usage
+
+afterVisitMethod { methodNode ->
+    scopeExit {
+        if (methods>2) {
+            addStaticTypeError("Method ${methodNode.name} contains more than 2 method calls", methodNode)
+        }
+    }
+}
+Gives you the opportunity to perform additional checks after a method body is visited by the type checker. This is useful if you collect information, for example, and want to perform additional checks once everything has been collected.
+
+Event name
+
+beforeVisitClass
+
+Called When
+
+Called by the type checker before type checking a class
+
+Arguments
+
+ClassNode node
+
+Usage
+
+beforeVisitClass { ClassNode classNode ->
+    def name = classNode.nameWithoutPackage
+    if (!(name[0] in 'A'..'Z')) {
+        addStaticTypeError("Class '${name}' doesn't start with an uppercase letter",classNode)
+    }
+}
+If a class is type checked, then before visiting the class, this event will be sent. It is also the case for inner classes defined inside a class annotated with @TypeChecked. It can help you define the scope of your extension, or you can even totally replace the visit of the type checker with a custom type checking implementation. For that, you would have to set the handled flag to true. 
+
+Event name
+
+afterVisitClass
+
+Called When
+
+Called by the type checker after having finished the visit of a type checked class
+
+Arguments
+
+ClassNode node
+
+Usage
+
+afterVisitClass { ClassNode classNode ->
+    def name = classNode.nameWithoutPackage
+    if (!(name[0] in 'A'..'Z')) {
+        addStaticTypeError("Class '${name}' doesn't start with an uppercase letter",classNode)
+    }
+}
+Called for every class being type checked after the type checker finished its work. This includes classes annotated with @TypeChecked and any inner/anonymous class defined in the same class with is not skipped.
+
+Event name
+
+incompatibleAssignment
+
+Called When
+
+Called when the type checker thinks that an assignment is incorrect, meaning that the right hand side of an assignment is incompatible with the left hand side
+
+Arguments
+
+ClassNode lhsType, ClassNode rhsType,  Expression assignment
+
+Usage
+
+incompatibleAssignment { lhsType, rhsType, expr ->
+    if (isBinaryExpression(expr) && isAssignment(expr.operation.type)) {
+        if (lhsType==classNodeFor(int) && rhsType==classNodeFor(Closure)) {
+            handled = true
+        }
+    }
+}
+Gives the developer the ability to handle incorrect assignments. This is for example useful if a class overrides setProperty, because in that case it is possible that assigning a variable of one type to a property of another type is handled through that runtime mechanism. In that case, you can help the type checker just by telling it that the assignment is valid (using handled set to true).
+
+Event name
+
+ambiguousMethods
+
+Called When
+
+Called when the type checker cannot choose between several candidate methods
+
+Arguments
+
+List<MethodNode> methods,  Expression origin
+
+Usage
+
+ambiguousMethods { methods, origin ->
+    // choose the method which has an Integer as parameter type
+    methods.find { it.parameters.any { it.type == classNodeFor(Integer) } }
+}
+Gives the developer the ability to handle incorrect assignments. This is for example useful if a class overrides setProperty, because in that case it is possible that assigning a variable of one type to a property of another type is handled through that runtime mechanism. In that case, you can help the type checker just by telling it that the assignment is valid (using handled set to true).
+
+Of course, an extension script may consist of several blocks, and you can have multiple blocks responding to the same event. This makes the DSL look nicer and easier to write. However, reacting to events is far from sufficient. If you know you can react to events, you also need to deal with the errors, which implies several helper methods that will make things easier.
+
+7.1.5. Working with extensions
+Support classes
+The DSL relies on a support class called org.codehaus.groovy.transform.stc.GroovyTypeCheckingExtensionSupport . This class itself extends org.codehaus.groovy.transform.stc.TypeCheckingExtension . Those two classes define a number of helper methods that will make working with the AST easier, especially regarding type checking. One interesting thing to know is that you have access to the type checker. This means that you can programmatically call methods of the type checker, including those that allow you to throw compilation errors.
+
+The extension script delegates to the org.codehaus.groovy.transform.stc.GroovyTypeCheckingExtensionSupport class, meaning that you have direct access to the following variables:
+
+context: the type checker context, of type org.codehaus.groovy.transform.stc.TypeCheckingContext
+
+typeCheckingVisitor: the type checker itself, a org.codehaus.groovy.transform.stc.StaticTypeCheckingVisitor instance
+
+generatedMethods: a list of "generated methods", which is in fact the list of "dummy" methods that you can create inside a type checking extension using the newMethod calls
+
+The type checking context contains a lot of information that is useful in context for the type checker. For example, the current stack of enclosing method calls, binary expressions, closures, … This information is in particular important if you have to know where you are when an error occurs and that you want to handle it.
+
+Class nodes
+Handling class nodes is something that needs particular attention when you work with a type checking extension. Compilation works with an abstract syntax tree (AST) and the tree may not be complete when you are type checking a class. This also means that when you refer to types, you must not use class literals such as String or HashSet, but to class nodes representing those types. This requires a certain level of abstraction and understanding how Groovy deals with class nodes. To make things easier, Groovy supplies several helper methods to deal with class nodes. For example, if you want to say "the type for String", you can write:
+
+assert classNodeFor(String) instanceof ClassNode
+You would also note that there is a variant of classNodeFor that takes a String as an argument, instead of a Class. In general, you should not use that one, because it would create a class node for which the name is String, but without any method, any property, … defined on it. The first version returns a class node that is resolved but the second one returns one that is not. So the latter should be reserved for very special cases.
+
+The second problem that you might encounter is referencing a type which is not yet compiled. This may happen more often than you think. For example, when you compile a set of files together. In that case, if you want to say "that variable is of type Foo" but Foo is not yet compiled, you can still refer to the Foo class node using lookupClassNodeFor:
+
+assert lookupClassNodeFor('Foo') instanceof ClassNode
+Helping the type checker
+Say that you know that variable foo is of type Foo and you want to tell the type checker about it. Then you can use the storeType method, which takes two arguments: the first one is the node for which you want to store the type and the second one is the type of the node. If you look at the implementation of storeType, you would see that it delegates to the type checker equivalent method, which itself does a lot of work to store node metadata. You would also see that storing the type is not limited to variables: you can set the type of any expression.
+
+Likewise, getting the type of an AST node is just a matter of calling getType on that node. This would in general be what you want, but there’s something that you must understand:
+
+getType returns the inferred type of an expression. This means that it will not return, for a variable declared of type Object the class node for Object, but the inferred type of this variable at this point of the code (flow typing)
+
+if you want to access the origin type of a variable (or field/parameter), then you must call the appropriate method on the AST node
+
+Throwing an error
+To throw a type checking error, you only have to call the addStaticTypeError method which takes two arguments:
+
+a message which is a string that will be displayed to the end user
+
+an AST node responsible for the error. It’s better to provide the best suiting AST node because it will be used to retrieve the line and column numbers
+
+isXXXExpression
+It is often required to know the type of an AST node. For readability, the DSL provides a special isXXXExpression method that will delegate to x instance of XXXExpression. For example, instead of writing:
+
+if (node instanceof BinaryExpression) {
+   ...
+}
+which requires you to import the BinaryExpression class, you can just write:
+
+if (isBinaryExpression(node)) {
+   ...
+}
+Virtual methods
+When you perform type checking of dynamic code, you may often face the case when you know that a method call is valid but there is no "real" method behind it. As an example, take the Grails dynamic finders. You can have a method call consisting of a method named findByName(…). As there’s no findByName method defined in the bean, the type checker would complain. Yet, you would know that this method wouldn’t fail at runtime, and you can even tell what is the return type of this method. For this case, the DSL supports two special constructs that consist of phantom methods. This means that you will return a method node that doesn’t really exist but is defined in the context of type checking. Three methods exist:
+
+newMethod(String name, Class returnType)
+
+newMethod(String name, ClassNode returnType)
+
+newMethod(String name, Callable<ClassNode> return Type)
+
+All three variants do the same: they create a new method node which name is the supplied name and define the return type of this method. Moreover, the type checker would add those methods in the generatedMethods list (see isGenerated below). The reason why we only set a name and a return type is that it is only what you need in 90% of the cases. For example, in the findByName example upper, the only thing you need to know is that findByName wouldn’t fail at runtime, and that it returns a domain class. The Callable version of return type is interesting because it defers the computation of the return type when the type checker actually needs it. This is interesting because in some circumstances, you may not know the actual return type when the type checker demands it, so you can use a closure that will be called each time getReturnType is called by the type checker on this method node. If you combine this with deferred checks, you can achieve pretty complex type checking including handling of forward references.
+
+newMethod(name) {
+    // each time getReturnType on this method node will be called, this closure will be called!
+    println 'Type checker called me!'
+    lookupClassNodeFor(Foo) // return type
+}
+Should you need more than the name and return type, you can always create a new MethodNode by yourself.
+
+Scoping
+Scoping is very important in DSL type checking and is one of the reasons why we couldn’t use a pointcut based approach to DSL type checking. Basically, you must be able to define very precisely when your extension applies and when it does not. Moreover, you must be able to handle situations that a regular type checker would not be able to handle, such as forward references:
+
+point a(1,1)
+line a,b // b is referenced afterwards!
+point b(5,2)
+Say for example that you want to handle a builder:
+
+builder.foo {
+   bar
+   baz(bar)
+}
+Your extension, then, should only be active once you’ve entered the foo method, and inactive outside of this scope. But you could have complex situations like multiple builders in the same file or embedded builders (builders in builders). While you should not try to fix all this from start (you must accept limitations to type checking), the type checker does offer a nice mechanism to handle this: a scoping stack, using the newScope and scopeExit methods.
+
+newScope creates a new scope and puts it on top of the stack
+
+scopeExits pops a scope from the stack
+
+A scope consists of:
+
+a parent scope
+
+a map of custom data
+
+If you want to look at the implementation, it’s simply a LinkedHashMap (org.codehaus.groovy.transform.stc.GroovyTypeCheckingExtensionSupport.TypeCheckingScope), but it’s quite powerful. For example, you can use such a scope to store a list of closures to be executed when you exit the scope. This is how you would handle forward references: 
+
+def scope = newScope()
+scope.secondPassChecks = []
+//...
+scope.secondPassChecks << { println 'executed later' }
+// ...
+scopeExit {
+    secondPassChecks*.run() // execute deferred checks
+}
+That is to say, that if at some point you are not able to determine the type of an expression, or that you are not able to check at this point that an assignment is valid or not, you can still make the check later… This is a very powerful feature. Now, newScope and scopeExit provide some interesting syntactic sugar:
+
+newScope {
+    secondPassChecks = []
+}
+At anytime in the DSL, you can access the current scope using getCurrentScope() or more simply currentScope:
+
+//...
+currentScope.secondPassChecks << { println 'executed later' }
+// ...
+The general schema would then be:
+
+determine a pointcut where you push a new scope on stack and initialize custom variables within this scope
+
+using the various events, you can use the information stored in your custom scope to perform checks, defer checks,…
+
+determine a pointcut where you exit the scope, call scopeExit and eventually perform additional checks
+
+Other useful methods
+For the complete list of helper methods, please refer to the org.codehaus.groovy.transform.stc.GroovyTypeCheckingExtensionSupport and  org.codehaus.groovy.transform.stc.TypeCheckingExtension classes. However, take special attention to those methods:
+
+isDynamic: takes a VariableExpression as argument and returns true if the variable is a DynamicExpression, which means, in a script, that it wasn’t defined using a type or def.
+
+isGenerated: takes a MethodNode as an argument and tells if the method is one that was generated by the type checker extension using the newMethod method
+
+isAnnotatedBy: takes an AST node and a Class (or ClassNode), and tells if the node is annotated with this class. For example: isAnnotatedBy(node, NotNull)
+
+getTargetMethod: takes a method call as argument and returns the MethodNode that the type checker has determined for it
+
+delegatesTo: emulates the behaviour of the @DelegatesTo annotation. It allows you to tell that the argument will delegate to a specific type (you can also specify the delegation strategy)
+
+7.2. Advanced type checking extensions
+7.2.1. Precompiled type checking extensions
+All the examples above use type checking scripts. They are found in source form in classpath, meaning that:
+
+a Groovy source file, corresponding to the type checking extension, is available on compilation classpath
+
+this file is compiled by the Groovy compiler for each source unit being compiled (often, a source unit corresponds to a single file)
+
+It is a very convenient way to develop type checking extensions, however it implies a slower compilation phase, because of the compilation of the extension itself for each file being compiled. For those reasons, it can be practical to rely on a precompiled extension. You have two options to do this:
+
+write the extension in Groovy, compile it, then use a reference to the extension class instead of the source
+
+write the extension in Java, compile it, then use a reference to the extension class
+
+Writing a type checking extension in Groovy is the easiest path. Basically, the idea is that the type checking extension script becomes the body of the main method of a type checking extension class, as illustrated here:
+
+import org.codehaus.groovy.transform.stc.GroovyTypeCheckingExtensionSupport
+
+class PrecompiledExtension extends GroovyTypeCheckingExtensionSupport.TypeCheckingDSL {     
+    @Override
+    Object run() {                                                                          
+        unresolvedVariable { var ->
+            if ('robot'==var.name) {
+                storeType(var, classNodeFor(Robot))                                         
+                handled = true
+            }
+        }
+    }
+}
+extending the TypeCheckingDSL class is the easiest
+then the extension code needs to go inside the run method
+and you can use the very same events as an extension written in source form
+Setting up the extension is very similar to using a source form extension:
+
+config.addCompilationCustomizers(
+    new ASTTransformationCustomizer(
+        TypeChecked,
+        extensions:['typing.PrecompiledExtension'])
+)
+The difference is that instead of using a path in classpath, you just specify the fully qualified class name of the precompiled extension.
+
+In case you really want to write an extension in Java, then you will not benefit from the type checking extension DSL. The extension above can be rewritten in Java this way:
+
+import org.codehaus.groovy.ast.ClassHelper;
+import org.codehaus.groovy.ast.expr.VariableExpression;
+import org.codehaus.groovy.transform.stc.AbstractTypeCheckingExtension;
+
+
+import org.codehaus.groovy.transform.stc.StaticTypeCheckingVisitor;
+
+public class PrecompiledJavaExtension extends AbstractTypeCheckingExtension {                   
+
+    public PrecompiledJavaExtension(final StaticTypeCheckingVisitor typeCheckingVisitor) {
+        super(typeCheckingVisitor);
+    }
+
+    @Override
+    public boolean handleUnresolvedVariableExpression(final VariableExpression vexp) {          
+        if ("robot".equals(vexp.getName())) {
+            storeType(vexp, ClassHelper.make(Robot.class));
+            setHandled(true);
+            return true;
+        }
+        return false;
+    }
+
+}
+extend the AbstractTypeCheckingExtension class
+then override the handleXXX methods as required
+7.2.2. Using @Grab in a type checking extension
+It is totally possible to use the @Grab annotation in a type checking extension. This means you can include libraries that would only be available at compile time. In that case, you must understand that you would increase the time of compilation significantly (at least, the first time it grabs the dependencies).
+
+7.2.3. Sharing or packaging type checking extensions
+A type checking extension is just a script that need to be on classpath. As such, you can share it as is, or bundle it in a jar file that would be added to classpath.
+
+7.2.4. Global type checking extensions
+While you can configure the compiler to transparently add type checking extensions to your script, there is currently no way to apply an extension transparently just by having it on classpath.
+
+7.2.5. Type checking extensions and @CompileStatic
+Type checking extensions are used with @TypeChecked but can also be used with @CompileStatic. However, you must be aware that:
+
+a type checking extension used with @CompileStatic will in general not be sufficient to let the compiler know how to generate statically compilable code from "unsafe" code
+
+it is possible to use a type checking extension with @CompileStatic just to enhance type checking, that is to say introduce more compilation errors, without actually dealing with dynamic code
+
+Let’s explain the first point, which is that even if you use an extension, the compiler will not know how to compile your code statically: technically, even if you tell the type checker what is the type of a dynamic variable, for example, it would not know how to compile it. Is it getBinding('foo'), getProperty('foo'), delegate.getFoo(),…? There’s absolutely no direct way to tell the static compiler how to compile such code even if you use a type checking extension (that would, again, only give hints about the type).
+
+One possible solution for this particular example is to instruct the compiler to use mixed mode compilation. The more advanced one is to use AST transformations during type checking but it is far more complex.
+
+Type checking extensions allow you to help the type checker where it fails, but it also allow you to fail where it doesn’t. In that context, it makes sense to support extensions for @CompileStatic too. Imagine an extension that is capable of type checking SQL queries. In that case, the extension would be valid in both dynamic and static context, because without the extension, the code would still pass.
+
+7.2.6. Mixed mode compilation
+In the previous section, we highlighted the fact that you can activate type checking extensions with @CompileStatic. In that context, the type checker would not complain anymore about some unresolved variables or unknown method calls, but it would still wouldn’t know how to compile them statically.
+
+Mixed mode compilation offers a third way, which is to instruct the compiler that whenever an unresolved variable or method call is found, then it should fall back to a dynamic mode. This is possible thanks to type checking extensions and a special makeDynamic call.
+
+To illustrate this, let’s come back to the Robot example:
+
+robot.move 100
+And let’s try to activate our type checking extension using @CompileStatic instead of @TypeChecked:
+
+def config = new CompilerConfiguration()
+config.addCompilationCustomizers(
+    new ASTTransformationCustomizer(
+        CompileStatic,                                      
+        extensions:['robotextension.groovy'])               
+)
+def shell = new GroovyShell(config)
+def robot = new Robot()
+shell.setVariable('robot', robot)
+shell.evaluate(script)
+Apply @CompileStatic transparently
+Activate the type checking extension
+The script will run fine because the static compiler is told about the type of the robot variable, so it is capable of making a direct call to move. But before that, how did the compiler know how to get the robot variable? In fact by default, in a type checking extension, setting handled=true on an unresolved variable will automatically trigger a dynamic resolution, so in this case you don’t have anything special to make the compiler use a mixed mode. However, let’s slightly update our example, starting from the robot script:
+
+move 100
+Here you can notice that there is no reference to robot anymore. Our extension will not help then because we will not be able to instruct the compiler that move is done on a Robot instance. This example of code can be executed in a totally dynamic way thanks to the help of a groovy.util.DelegatingScript:
+
+def config = new CompilerConfiguration()
+config.scriptBaseClass = 'groovy.util.DelegatingScript'     
+def shell = new GroovyShell(config)
+def runner = shell.parse(script)                            
+runner.setDelegate(new Robot())                             
+runner.run()                                                
+we configure the compiler to use a DelegatingScript as the base class
+the script source needs to be parsed and will return an instance of DelegatingScript
+we can then call setDelegate to use a Robot as the delegate of the script
+then execute the script. move will be directly executed on the delegate
+If we want this to pass with @CompileStatic, we have to use a type checking extension, so let’s update our configuration:
+
+config.addCompilationCustomizers(
+    new ASTTransformationCustomizer(
+        CompileStatic,                                      
+        extensions:['robotextension2.groovy'])              
+)
+apply @CompileStatic transparently
+use an alternate type checking extension meant to recognize the call to move
+Then in the previous section we have learnt how to deal with unrecognized method calls, so we are able to write this extension:
+
+robotextension2.groovy
+methodNotFound { receiver, name, argList, argTypes, call ->
+    if (isMethodCallExpression(call)                        
+        && call.implicitThis                                
+        && 'move'==name                                     
+        && argTypes.length==1                               
+        && argTypes[0] == classNodeFor(int)                 
+    ) {
+        handled = true                                      
+        newMethod('move', classNodeFor(Robot))              
+    }
+}
+if the call is a method call (not a static method call)
+that this call is made on "implicit this" (no explicit this.)
+that the method being called is move
+and that the call is done with a single argument
+and that argument is of type int
+then tell the type checker that the call is valid
+and that the return type of the call is Robot
+If you try to execute this code, then you could be surprised that it actually fails at runtime:
+
+java.lang.NoSuchMethodError: java.lang.Object.move()Ltyping/Robot;
+The reason is very simple: while the type checking extension is sufficient for @TypeChecked, which does not involve static compilation, it is not enough for @CompileStatic which requires additional information. In this case, you told the compiler that the method existed, but you didn’t explain to it what method it is in reality, and what is the receiver of the message (the delegate).
+
+Fixing this is very easy and just implies replacing the newMethod call with something else:
+
+robotextension3.groovy
+methodNotFound { receiver, name, argList, argTypes, call ->
+    if (isMethodCallExpression(call)
+        && call.implicitThis
+        && 'move'==name
+        && argTypes.length==1
+        && argTypes[0] == classNodeFor(int)
+    ) {
+        makeDynamic(call, classNodeFor(Robot))              
+    }
+}
+tell the compiler that the call should be make dynamic
+The makeDynamic call does 3 things:
+
+it returns a virtual method just like newMethod
+
+automatically sets the handled flag to true for you
+
+but also marks the call to be done dynamically
+
+So when the compiler will have to generate bytecode for the call to move, since it is now marked as a dynamic call, it will fallback to the dynamic compiler and let it handle the call. And since the extension tells us that the return type of the dynamic call is a Robot, subsequent calls will be done statically!
+
+Some would wonder why the static compiler doesn’t do this by default without an extension. It is a design decision:
+
+if the code is statically compiled, we normally want type safety and best performance
+
+so if unrecognized variables/method calls are made dynamic, you loose type safety, but also all support for typos at compile time!
+
+In short, if you want to have mixed mode compilation, it has to be explicit, through a type checking extension, so that the compiler, and the designer of the DSL, are totally aware of what they are doing.
+
+makeDynamic can be used on 3 kind of AST nodes:
+
+a method node (MethodNode)
+
+a variable (VariableExpression)
+
+a property expression (PropertyExpression)
+
+If that is not enough, then it means that static compilation cannot be done directly and that you have to rely on AST transformations.
+
+7.2.7. Transforming the AST in an extension
+Type checking extensions look very attractive from an AST transformation design point of view: extensions have access to context like inferred types, which is often nice to have. And an extension has a direct access to the abstract syntax tree. Since you have access to the AST, there is nothing in theory that prevents you from modifying the AST. However, we do not recommend you to do so, unless you are an advanced AST transformation designer and well aware of the compiler internals:
+
+First of all, you would explicitly break the contract of type checking, which is to annotate, and only annotate the AST. Type checking should not modify the AST tree because you wouldn’t be able to guarantee anymore that code without the @TypeChecked annotation behaves the same without the annotation.
+
+If your extension is meant to work with @CompileStatic, then you can modify the AST because this is indeed what @CompileStatic will eventually do. Static compilation doesn’t guarantee the same semantics at dynamic Groovy so there is effectively a difference between code compiled with @CompileStatic and code compiled with @TypeChecked. It’s up to you to choose whatever strategy you want to update the AST, but probably using an AST transformation that runs before type checking is easier.
+
+if you cannot rely on a transformation that kicks in before the type checker, then you must be very careful
+
+The type checking phase is the last phase running in the compiler before bytecode generation. All other AST transformations run before that and the compiler does a very good job at "fixing" incorrect AST generated before the type checking phase. As soon as you perform a transformation during type checking, for example directly in a type checking extension, then you have to do all this work of generating a 100% compiler compliant abstract syntax tree by yourself, which can easily become complex. That’s why we do not recommend to go that way if you are beginning with type checking extensions and AST transformations.
+7.2.8. Examples
+Examples of real life type checking extensions are easy to find. You can download the source code for Groovy and take a look at the TypeCheckingExtensionsTest class which is linked to various extension scripts.
+
+An example of a complex type checking extension can be found in the Markup Template Engine source code: this template engine relies on a type checking extension and AST transformations to transform templates into fully statically compiled code. Sources for this can be found here.
+
+Groovy
+Learn
+Documentation
+Download
+Support
+Contribute
+Ecosystem
+About
+Source code
+Security
+Books
+Thanks
+Sponsorship
+FAQ
+Search
+Socialize
+Discuss on the mailing-list
+Groovy newsletter
+Groovy on Twitter
+Events and conferences
+Source code on GitHub
+Report issues in Jira
+Stack Overflow questions
+Slack Community
+The Groovy programming language is supported by the Apache Software Foundation and the Groovy community
+
+The Apache Software Foundation
+© 2003-2019 the Apache Groovy project — Groovy is Open Source, Apache 2 License

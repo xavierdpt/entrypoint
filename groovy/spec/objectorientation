@@ -1,0 +1,1802 @@
+
+ Apache Groovy
+Learn
+Documentation
+Download
+Support
+Contribute
+Ecosystem
+Socialize
+Table of contents
+1. Types
+1.1. Primitive types
+1.2. Class
+1.2.1. Normal class
+1.2.2. Inner class
+Anonymous inner class
+1.2.3. Abstract class
+1.3. Interface
+1.4. Constructors
+1.4.1. Positional parameters
+1.4.2. Named parameters
+1.5. Methods
+1.5.1. Method definition
+1.5.2. Named parameters
+Mixing named and positional parameters
+1.5.3. Default arguments
+1.5.4. Varargs
+1.5.5. Method selection algorithm
+1.5.6. Exception declaration
+1.6. Fields and properties
+1.6.1. Fields
+1.6.2. Properties
+1.7. Annotation
+1.7.1. Annotation definition
+1.7.2. Annotation placement
+1.7.3. Annotation member values
+1.7.4. Retention policy
+1.7.5. Closure annotation parameters
+1.7.6. Meta-annotations
+Declaring meta-annotations
+Behavior of meta-annotations
+Meta-annotation parameters
+Handling duplicate annotations
+Custom annotation processors
+1.8. Inheritance
+1.9. Generics
+2. Traits
+2.1. Methods
+2.1.1. Public methods
+2.1.2. Abstract methods
+2.1.3. Private methods
+2.1.4. Final methods
+2.2. The meaning of this
+2.3. Interfaces
+2.4. Properties
+2.5. Fields
+2.5.1. Private fields
+2.5.2. Public fields
+2.6. Composition of behaviors
+2.7. Overriding default methods
+2.8. Extending traits
+2.8.1. Simple inheritance
+2.8.2. Multiple inheritance
+2.9. Duck typing and traits
+2.9.1. Dynamic code
+2.9.2. Dynamic methods in a trait
+2.10. Multiple inheritance conflicts
+2.10.1. Default conflict resolution
+2.10.2. User conflict resolution
+2.11. Runtime implementation of traits
+2.11.1. Implementing a trait at runtime
+2.11.2. Implementing multiple traits at once
+2.12. Chaining behavior
+2.12.1. Semantics of super inside a trait
+2.13. Advanced features
+2.13.1. SAM type coercion
+2.13.2. Differences with Java 8 default methods
+2.14. Differences with mixins
+2.15. Static methods, properties and fields
+2.16. Inheritance of state gotchas
+2.17. Self types
+2.17.1. Type constraints on traits
+2.17.2. The @SelfType annotation
+2.18. Limitations
+2.18.1. Compatibility with AST transformations
+2.18.2. Prefix and postfix operations
+Object orientation
+This chapter covers the object orientation of the Groovy programming language.
+
+1. Types
+1.1. Primitive types
+Groovy supports the same primitive types as those defined by the Java Language Specification:
+
+integral types: byte (8 bit), short (16 bit), int (32 bit) and long (64 bit)
+
+floating-point types: float (32 bit) and double (64 bit)
+
+boolean type (exactly true or false)
+
+char type (16 bit, usable as a numeric type, representing an UTF-16 code)
+
+While Groovy declares and stores primitive fields and variables as primitives, because it uses Objects for everything, it autowraps references to primitives. Just like Java, the wrappers it uses are
+
+Table 1. primitive wrappers
+Primitive type	Wrapper class
+boolean
+
+Boolean
+
+char
+
+Character
+
+short
+
+Short
+
+int
+
+Integer
+
+long
+
+Long
+
+float
+
+Float
+
+double
+
+Double
+
+Here’s an example using int
+
+class Foo {
+  static int i
+}
+
+assert Foo.class.getDeclaredField('i').type == int.class
+assert Foo.i.class != int.class && Foo.i.class == Integer.class
+Now you may be concerned that this means every time you use a mathematical operator on a reference to a primitive that you’ll incur the cost of unboxing and reboxing the primitive. But this is not the case, as Groovy will compile your operators into their method equivalents and uses those instead. Additionally, Groovy will automatically unbox to a primitive when calling a Java method that takes a primitive parameter and automatically box primitive method return values from Java. However, be aware there are some differences from Java’s method resolution.
+
+1.2. Class
+Groovy classes are very similar to Java classes, and are compatible with Java ones at JVM level. They may have methods, fields and properties (think JavaBean properties but with less boilerplate). Classes and class members can have the same modifiers (public, protected, private, static, etc) as in Java with some minor differences at the source level which are explained shortly.
+
+The key differences between Groovy classes and their Java counterparts are:
+
+Classes or methods with no visibility modifier are automatically public (a special annotation can be used to achieve package private visibility).
+
+Fields with no visibility modifier are turned into properties automatically, which results in less verbose code, since explicit getter and setter methods aren’t needed. More on this aspect will be covered in the fields and properties section.
+
+Classes do not need to have the same base name as their source file definitions but it is highly recommended in most scenarios (see also the next point about scripts).
+
+One source file may contain one or more classes (but if a file contains any code not in a class, it is considered a script). Scripts are just classes with some special conventions and will have the same name as their source file (so don’t include a class definition within a script having the same name as the script source file).
+
+The following code presents an example class.
+
+class Person {                       
+
+    String name                      
+    Integer age
+
+    def increaseAge(Integer years) { 
+        this.age += years
+    }
+}
+class beginning, with the name Person
+string field and property named name
+method definition
+1.2.1. Normal class
+Normal classes refer to classes which are top level and concrete. This means they can be instantiated without restrictions from any other classes or scripts. This way, they can only be public (even though the public keyword may be suppressed). Classes are instantiated by calling their constructors, using the new keyword, as in the following snippet.
+
+def p = new Person()
+1.2.2. Inner class
+Inner classes are defined within another classes. The enclosing class can use the inner class as usual. On the other side, a inner class can access members of its enclosing class, even if they are private. Classes other than the enclosing class are not allowed to access inner classes. Here is an example:
+
+class Outer {
+    private String privateStr
+
+    def callInnerMethod() {
+        new Inner().methodA()       
+    }
+
+    class Inner {                   
+        def methodA() {
+            println "${privateStr}." 
+        }
+    }
+}
+the inner class is instantiated and its method gets called
+inner class definition, inside its enclosing class
+even being private, a field of the enclosing class is accessed by the inner class
+There are some reasons for using inner classes:
+
+They increase encapsulation by hiding the inner class from other classes, which do not need to know about it. This also leads to cleaner packages and workspaces.
+
+They provide a good organization, by grouping classes that are used by only one class.
+
+They lead to more maintainable codes, since inner classes are near the classes that use them.
+
+In several cases, inner classes are implementation of interfaces whose methods are needed by the outer class. The code below illustrates this with the usage of threads, which are very common.
+
+class Outer2 {
+    private String privateStr = 'some string'
+
+    def startThread() {
+       new Thread(new Inner2()).start()
+    }
+
+    class Inner2 implements Runnable {
+        void run() {
+            println "${privateStr}."
+        }
+    }
+}
+Note that the class Inner2 is defined only to provide an implementation of the method run to class Outer2. Anonymous inner classes help to eliminate verbosity in this case.
+
+Anonymous inner class
+The last example of inner class can be simplified with an anonymous inner class. The same functionality can be achieved with the following code.
+
+class Outer3 {
+    private String privateStr = 'some string'
+
+    def startThread() {
+        new Thread(new Runnable() {      
+            void run() {
+                println "${privateStr}."
+            }
+        }).start()                       
+    }
+}
+comparing with the last example of previous section, the new Inner2() was replaced by new Runnable() along with all its implementation
+the method start is invoked normally
+Thus, there was no need to define a new class to be used just once.
+
+1.2.3. Abstract class
+Abstract classes represent generic concepts, thus, they cannot be instantiated, being created to be subclassed. Their members include fields/properties and abstract or concrete methods. Abstract methods do not have implementation, and must be implemented by concrete subclasses.
+
+abstract class Abstract {         
+    String name
+
+    abstract def abstractMethod() 
+
+    def concreteMethod() {
+        println 'concrete'
+    }
+}
+abstract classes must be declared with abstract keyword
+abstract methods must also be declared with abstract keyword
+Abstract classes are commonly compared to interfaces. But there are at least two important differences of choosing one or another. First, while abstract classes may contain fields/properties and concrete methods, interfaces may contain only abstract methods (method signatures). Moreover, one class can implement several interfaces, whereas it can extend just one class, abstract or not.
+
+1.3. Interface
+An interface defines a contract that a class needs to conform to. An interface only defines a list of methods that need to be implemented, but does not define the methods implementation.
+
+interface Greeter {                                         
+    void greet(String name)                                 
+}
+an interface needs to be declared using the interface keyword
+an interface only defines method signatures
+Methods of an interface are always public. It is an error to use protected or private methods in interfaces:
+
+interface Greeter {
+    protected void greet(String name)           
+}
+Using protected is a compile-time error
+A class implements an interface if it defines the interface in its implements list or if any of its superclasses does:
+
+class SystemGreeter implements Greeter {                    
+    void greet(String name) {                               
+        println "Hello $name"
+    }
+}
+
+def greeter = new SystemGreeter()
+assert greeter instanceof Greeter                           
+The SystemGreeter declares the Greeter interface using the implements keyword
+Then implements the required greet method
+Any instance of SystemGreeter is also an instance of the Greeter interface
+An interface can extend another interface:
+
+interface ExtendedGreeter extends Greeter {                 
+    void sayBye(String name)
+}
+the ExtendedGreeter interface extends the Greeter interface using the extends keyword
+It is worth noting that for a class to be an instance of an interface, it has to be explicit. For example, the following class defines the greet method as it is declared in the Greeter interface, but does not declare Greeter in its interfaces:
+
+class DefaultGreeter {
+    void greet(String name) { println "Hello" }
+}
+
+greeter = new DefaultGreeter()
+assert !(greeter instanceof Greeter)
+In other words, Groovy does not define structural typing. It is however possible to make an instance of an object implement an interface at runtime, using the as coercion operator:
+
+greeter = new DefaultGreeter()                              
+coerced = greeter as Greeter                                
+assert coerced instanceof Greeter                           
+create an instance of DefaultGreeter that does not implement the interface
+coerce the instance into a Greeter at runtime
+the coerced instance implements the Greeter interface
+You can see that there are two distinct objects: one is the source object, a DefaultGreeter instance, which does not implement the interface. The other is an instance of Greeter that delegates to the coerced object.
+
+Groovy interfaces do not support default implementation like Java 8 interfaces. If you are looking for something similar (but not equal), traits are close to interfaces, but allow default implementation as well as other important features described in this manual.
+1.4. Constructors
+Constructors are special methods used to initialize an object with a specific state. As with normal methods, it is possible for a class to declare more than one constructor, so long as each constructor has a unique type signature. If an object doesn’t require any parameters during construction, it may use a no-arg constructor. If no constructors are supplied, an empty no-arg constructor will be provided by the Groovy compiler.
+
+Groovy supports two invocation styles:
+
+positional parameters are used in a similar to how you would use Java constructors
+
+named parameters allow you to specify parameter names when invoking the constructor.
+
+1.4.1. Positional parameters
+To create an object by using positional parameters, the respective class needs to declare one or more constructors. In the case of multiple constructors, each must have a unique type signature. The constructors can also added to the class using the groovy.transform.TupleConstructor annotation.
+
+Typically, once at least one constructor is declared, the class can only be instantiated by having one of its constructors called. It is worth noting that, in this case, you can’t normally create the class with named parameters. Groovy does support named parameters so long as the class contains a no-arg constructor or provides a constructor which takes a Map argument as the first (and potentially only) argument - see the next section for details.
+
+There are three forms of using a declared constructor. The first one is the normal Java way, with the new keyword. The others rely on coercion of lists into the desired types. In this case, it is possible to coerce with the as keyword and by statically typing the variable.
+
+class PersonConstructor {
+    String name
+    Integer age
+
+    PersonConstructor(name, age) {          
+        this.name = name
+        this.age = age
+    }
+}
+
+def person1 = new PersonConstructor('Marie', 1)  
+def person2 = ['Marie', 2] as PersonConstructor  
+PersonConstructor person3 = ['Marie', 3]         
+Constructor declaration
+Constructor invocation, classic Java way
+Constructor usage, using coercion with as keyword
+Constructor usage, using coercion in assignment
+1.4.2. Named parameters
+If no (or a no-arg) constructor is declared, it is possible to create objects by passing parameters in the form of a map (property/value pairs). This can be in handy in cases where one wants to allow several combinations of parameters. Otherwise, by using traditional positional parameters it would be necessary to declare all possible constructors. Having a constructor where the first (and perhaps only) argument is a Map argument is also supported - such a constructor may also be added using the groovy.transform.MapConstructor annotation.
+
+class PersonWOConstructor {                                  
+    String name
+    Integer age
+}
+
+def person4 = new PersonWOConstructor()                      
+def person5 = new PersonWOConstructor(name: 'Marie')         
+def person6 = new PersonWOConstructor(age: 1)                
+def person7 = new PersonWOConstructor(name: 'Marie', age: 2) 
+No constructor declared
+No parameters given in the instantiation
+name parameter given in the instantiation
+age parameter given in the instantiation
+name and age parameters given in the instantiation
+It is important to highlight, however, that this approach gives more power to the constructor caller, while imposing an increased responsibility on the caller to get the names and value types correct. Thus, if greater control is desired, declaring constructors using positional parameters might be preferred.
+
+Notes:
+
+While the example above supplied no constructor, you can also supply a no-arg constructor or a constructor where the first argument is a Map, most typically it’s the only argument.
+
+When no (or a no-arg) constructor is declared, Groovy replaces the named constructor call by a call to the no-arg constructor followed by calls to the setter for each supplied named property.
+
+When the first argument is a Map, Groovy combines all named parameters into a Map (regardless of ordering) and supplies the map as the first parameter. This can be a good approach if your properties are declared as final (since they will be set in the constructor rather than after the fact with setters).
+
+You can support both named and positional construction by supply both positional constructors as well as a no-arg or Map constructor.
+
+You can support hybrid construction by having a constructor where the first argument is a Map but there are also additional positional parameters. Use this style with caution.
+
+1.5. Methods
+Groovy methods are quite similar to other languages. Some peculiarities will be shown in the next subsections.
+
+1.5.1. Method definition
+A method is defined with a return type or with the def keyword, to make the return type untyped. A method can also receive any number of arguments, which may not have their types explicitly declared. Java modifiers can be used normally, and if no visibility modifier is provided, the method is public.
+
+Methods in Groovy always return some value. If no return statement is provided, the value evaluated in the last line executed will be returned. For instance, note that none of the following methods uses the return keyword.
+
+def someMethod() { 'method called' }                           
+String anotherMethod() { 'another method called' }             
+def thirdMethod(param1) { "$param1 passed" }                   
+static String fourthMethod(String param1) { "$param1 passed" } 
+Method with no return type declared and no parameter
+Method with explicit return type and no parameter
+Method with a parameter with no type defined
+Static method with a String parameter
+1.5.2. Named parameters
+Like constructors, normal methods can also be called with named parameters. To support this notation, a convention is used where the first argument to the method is a Map. In the method body, the parameter values can be accessed as in normal maps (map.key). If the method has just a single Map argument, all supplied parameters must be named.
+
+def foo(Map args) { "${args.name}: ${args.age}" }
+foo(name: 'Marie', age: 1)
+Mixing named and positional parameters
+Named parameters can be mixed with positional parameters. The same convention applies, in this case, in addition to the Map argument as the first argument, the method in question will have additional positional arguments as needed. Supplied positional parameters when calling the method must be in order. The named parameters can be in any position. They are grouped into the map and supplied as the first parameter automatically.
+
+def foo(Map args, Integer number) { "${args.name}: ${args.age}, and the number is ${number}" }
+foo(name: 'Marie', age: 1, 23)  
+foo(23, name: 'Marie', age: 1)  
+Method call with additional number argument of Integer type
+Method call with changed order of arguments
+If we don’t have the Map as the first argument, then a Map must be supplied for that argument instead of named parameters. Failure to do so will lead to groovy.lang.MissingMethodException:
+
+def foo(Integer number, Map args) { "${args.name}: ${args.age}, and the number is ${number}" }
+foo(name: 'Marie', age: 1, 23)  
+Method call throws groovy.lang.MissingMethodException: No signature of method: foo() is applicable for argument types: (LinkedHashMap, Integer) values: [[name:Marie, age:1], 23], because the named argument Map parameter is not defined as the first argument
+Above exception can be avoided if we replace named arguments with an explicit Map argument:
+
+def foo(Integer number, Map args) { "${args.name}: ${args.age}, and the number is ${number}" }
+foo(23, [name: 'Marie', age: 1])  
+Explicit Map argument in place of named arguments makes invocation valid
+Although Groovy allows you to mix named and positional parameters, it can lead to unnecessary confusion. Mix named and positional arguments with caution.
+1.5.3. Default arguments
+Default arguments make parameters optional. If the argument is not supplied, the method assumes a default value.
+
+def foo(String par1, Integer par2 = 1) { [name: par1, age: par2] }
+assert foo('Marie').age == 1
+Note that no mandatory parameter can be defined after a default parameter is present, only other default parameters.
+
+1.5.4. Varargs
+Groovy supports methods with a variable number of arguments. They are defined like this: def foo(p1, …​, pn, T…​ args). Here foo supports n arguments by default, but also an unspecified number of further arguments exceeding n.
+
+def foo(Object... args) { args.length }
+assert foo() == 0
+assert foo(1) == 1
+assert foo(1, 2) == 2
+This example defines a method foo, that can take any number of arguments, including no arguments at all. args.length will return the number of arguments given. Groovy allows T[] as a alternative notation to T…​. That means any method with an array as last parameter is seen by Groovy as a method that can take a variable number of arguments.
+
+def foo(Object[] args) { args.length }
+assert foo() == 0
+assert foo(1) == 1
+assert foo(1, 2) == 2
+If a method with varargs is called with null as the vararg parameter, then the argument will be null and not an array of length one with null as the only element.
+
+def foo(Object... args) { args }
+assert foo(null) == null
+If a varargs method is called with an array as an argument, then the argument will be that array instead of an array of length one containing the given array as the only element.
+
+def foo(Object... args) { args }
+Integer[] ints = [1, 2]
+assert foo(ints) == [1, 2]
+Another important point are varargs in combination with method overloading. In case of method overloading Groovy will select the most specific method. For example if a method foo takes a varargs argument of type T and another method foo also takes one argument of type T, the second method is preferred.
+
+def foo(Object... args) { 1 }
+def foo(Object x) { 2 }
+assert foo() == 1
+assert foo(1) == 2
+assert foo(1, 2) == 1
+1.5.5. Method selection algorithm
+(TBD)
+
+1.5.6. Exception declaration
+Groovy automatically allows you to treat checked exceptions like unchecked exceptions. This means that you don’t need to declare any checked exceptions that a method may throw as shown in the following example which can throw a FileNotFoundException if the file isn’t found:
+
+def badRead() {
+    new File('doesNotExist.txt').text
+}
+
+shouldFail(FileNotFoundException) {
+    badRead()
+}
+Nor will you be required to surround the call to the badRead method in the previous example within a try/catch block - though you are free to do so if you wish.
+
+If you wish to declare any exceptions that your code might throw (checked or otherwise) you are free to do so. Adding exceptions won’t change how the code is used from any other Groovy code but can be seen as documentation for the human reader of your code. The exceptions will become part of the method declaration in the bytecode, so if your code might be called from Java, it might be useful to include them. Using an explicit checked exception declaration is illustrated in the following example:
+
+def badRead() throws FileNotFoundException {
+    new File('doesNotExist.txt').text
+}
+
+shouldFail(FileNotFoundException) {
+    badRead()
+}
+1.6. Fields and properties
+1.6.1. Fields
+A field is a member of a class or a trait which has:
+
+a mandatory access modifier (public, protected, or private)
+
+one or more optional modifiers (static, final, synchronized)
+
+an optional type
+
+a mandatory name
+
+class Data {
+    private int id                                  
+    protected String description                    
+    public static final boolean DEBUG = false       
+}
+a private field named id, of type int
+a protected field named description, of type String
+a public static final field named DEBUG of type boolean
+A field may be initialized directly at declaration:
+
+class Data {
+    private String id = IDGenerator.next() 
+    // ...
+}
+the private field id is initialized with IDGenerator.next()
+It is possible to omit the type declaration of a field. This is however considered a bad practice and in general it is a good idea to use strong typing for fields:
+
+class BadPractice {
+    private mapping                         
+}
+class GoodPractice {
+    private Map<String,String> mapping      
+}
+the field mapping doesn’t declare a type
+the field mapping has a strong type
+The difference between the two is important if you want to use optional type checking later. It is also important for documentation. However in some cases like scripting or if you want to rely on duck typing it may be interesting to omit the type.
+
+1.6.2. Properties
+A property is an externally visible feature of a class. Rather than just using a public field to represent such features (which provides a more limited abstraction and would restrict refactoring possibilities), the typical convention in Java is to follow JavaBean conventions, i.e. represent the property using a combination of a private backing field and getters/setters. Groovy follows these same conventions but provides a simpler approach to defining the property. You can define a property with:
+
+an absent access modifier (no public, protected or private)
+
+one or more optional modifiers (static, final, synchronized)
+
+an optional type
+
+a mandatory name
+
+Groovy will then generate the getters/setters appropriately. For example:
+
+class Person {
+    String name                             
+    int age                                 
+}
+creates a backing private String name field, a getName and a setName method
+creates a backing private int age field, a getAge and a setAge method
+If a property is declared final, no setter is generated:
+
+class Person {
+    final String name                   
+    final int age                       
+    Person(String name, int age) {
+        this.name = name                
+        this.age = age                  
+    }
+}
+defines a read-only property of type String
+defines a read-only property of type int
+assigns the name parameter to the name field
+assigns the age parameter to the age field
+Properties are accessed by name and will call the getter or setter transparently, unless the code is in the class which defines the property:
+
+class Person {
+    String name
+    void name(String name) {
+        this.name = "Wonder$name"       
+    }
+    String wonder() {
+        this.name                       
+    }
+}
+def p = new Person()
+p.name = 'Marge'                        
+assert p.name == 'Marge'                
+p.name('Marge')                         
+assert p.wonder() == 'WonderMarge'      
+this.name will directly access the field because the property is accessed from within the class that defines it
+similarily a read access is done directly on the name field
+write access to the property is done outside of the Person class so it will implicitly call setName
+read access to the property is done outside of the Person class so it will implicitly call getName
+this will call the name method on Person which performs a direct access to the field
+this will call the wonder method on Person which performs a direct read access to the field
+It is worth noting that this behavior of accessing the backing field directly is done in order to prevent a stack overflow when using the property access syntax within a class that defines the property.
+
+It is possible to list the properties of a class thanks to the meta properties field of an instance:
+
+class Person {
+    String name
+    int age
+}
+def p = new Person()
+assert p.properties.keySet().containsAll(['name','age'])
+By convention, Groovy will recognize properties even if there is no backing field provided there are getters or setters that follow the Java Beans specification. For example:
+
+class PseudoProperties {
+    // a pseudo property "name"
+    void setName(String name) {}
+    String getName() {}
+
+    // a pseudo read-only property "age"
+    int getAge() { 42 }
+
+    // a pseudo write-only property "groovy"
+    void setGroovy(boolean groovy) {  }
+}
+def p = new PseudoProperties()
+p.name = 'Foo'                      
+assert p.age == 42                  
+p.groovy = true                     
+writing p.name is allowed because there is a pseudo-property name
+reading p.age is allowed because there is a pseudo-readonly property age
+writing p.groovy is allowed because there is a pseudo-writeonly property groovy
+This syntactic sugar is at the core of many DSLs written in Groovy.
+
+1.7. Annotation
+1.7.1. Annotation definition
+An annotation is a kind of special interface dedicated at annotating elements of the code. An annotation is a type which superinterface is the Annotation interface. Annotations are declared in a very similar way to interfaces, using the @interface keyword:
+
+@interface SomeAnnotation {}
+An annotation may define members in the form of methods without bodies and an optional default value. The possible member types are limited to:
+
+primitive types
+
+Strings
+
+Classes
+
+an enumeration
+
+another annotation type
+
+or any array of the above
+
+For example:
+
+@interface SomeAnnotation {
+    String value()                          
+}
+@interface SomeAnnotation {
+    String value() default 'something'      
+}
+@interface SomeAnnotation {
+    int step()                              
+}
+@interface SomeAnnotation {
+    Class appliesTo()                       
+}
+@interface SomeAnnotation {}
+@interface SomeAnnotations {
+    SomeAnnotation[] value()                
+}
+enum DayOfWeek { mon, tue, wed, thu, fri, sat, sun }
+@interface Scheduled {
+    DayOfWeek dayOfWeek()                   
+}
+an annotation defining a value member of type String
+an annotation defining a value member of type String with a default value of something
+an annotation defining a step member of type the primitive type int
+an annotation defining a appliesTo member of type Class
+an annotation defining a value member which type is an array of another annotation type
+an annotation defining a dayOfWeek member which type is the enumeration type DayOfWeek
+Unlike in the Java language, in Groovy, an annotation can be used to alter the semantics of the language. It is especially true of AST transformations which will generate code based on annotations.
+
+1.7.2. Annotation placement
+An annotation can be applied on various elements of the code:
+
+@SomeAnnotation                 
+void someMethod() {
+    // ...
+}
+
+@SomeAnnotation                 
+class SomeClass {}
+
+@SomeAnnotation String var      
+@SomeAnnotation applies to the someMethod method
+@SomeAnnotation applies to the SomeClass class
+@SomeAnnotation applies to the var variable
+In order to limit the scope where an annotation can be applied, it is necessary to declare it on the annotation definition, using the Target annotation. For example, here is how you would declare that an annotation can be applied to a class or a method:
+
+import java.lang.annotation.ElementType
+import java.lang.annotation.Target
+
+@Target([ElementType.METHOD, ElementType.TYPE])     
+@interface SomeAnnotation {}                        
+the @Target annotation is meant to annotate an annotation with a scope.
+@SomeAnnotation will therefore only be allowed on TYPE or METHOD
+The list of possible targets is available in the ElementType enumeration.
+
+Groovy does not support the TYPE_PARAMETER and TYPE_USE element types which were introduced in Java 8.
+1.7.3. Annotation member values
+When an annotation is used, it is required to set at least all members that do not have a default value. For example:
+
+@interface Page {
+    int statusCode()
+}
+
+@Page(statusCode=404)
+void notFound() {
+    // ...
+}
+However it is possible to omit value= in the declaration of the value of an annotation if the member value is the only one being set:
+
+@interface Page {
+    String value()
+    int statusCode() default 200
+}
+
+@Page(value='/home')                    
+void home() {
+    // ...
+}
+
+@Page('/users')                         
+void userList() {
+    // ...
+}
+
+@Page(value='error',statusCode=404)     
+void notFound() {
+    // ...
+}
+we can omit the statusCode because it has a default value, but value needs to be set
+since value is the only mandatory member without a default, we can omit value=
+if both value and statusCode need to be set, it is required to use value= for the default value member
+1.7.4. Retention policy
+The visibility of an annotation depends on its retention policy. The retention policy of an annotation is set using the Retention annotation:
+
+import java.lang.annotation.Retention
+import java.lang.annotation.RetentionPolicy
+
+@Retention(RetentionPolicy.SOURCE)                   
+@interface SomeAnnotation {}                         
+the @Retention annotation annotates the @SomeAnnotation annotation
+so @SomeAnnotation will have a SOURCE retention
+The list of possible retention targets and description is available in the RetentionPolicy enumeration. The choice usually depends on whether you want an annotation to be visible at compile time or runtime.
+
+1.7.5. Closure annotation parameters
+An interesting feature of annotations in Groovy is that you can use a closure as an annotation value. Therefore annotations may be used with a wide variety of expressions and still have IDE support. For example, imagine a framework where you want to execute some methods based on environmental constraints like the JDK version or the OS. One could write the following code:
+
+class Tasks {
+    Set result = []
+    void alwaysExecuted() {
+        result << 1
+    }
+    @OnlyIf({ jdk>=6 })
+    void supportedOnlyInJDK6() {
+        result << 'JDK 6'
+    }
+    @OnlyIf({ jdk>=7 && windows })
+    void requiresJDK7AndWindows() {
+        result << 'JDK 7 Windows'
+    }
+}
+For the @OnlyIf annotation to accept a Closure as an argument, you only have to declare the value as a Class:
+
+@Retention(RetentionPolicy.RUNTIME)
+@interface OnlyIf {
+    Class value()                    
+}
+To complete the example, let’s write a sample runner that would use that information:
+
+class Runner {
+    static <T> T run(Class<T> taskClass) {
+        def tasks = taskClass.newInstance()                                         
+        def params = [jdk:6, windows: false]                                        
+        tasks.class.declaredMethods.each { m ->                                     
+            if (Modifier.isPublic(m.modifiers) && m.parameterTypes.length == 0) {   
+                def onlyIf = m.getAnnotation(OnlyIf)                                
+                if (onlyIf) {
+                    Closure cl = onlyIf.value().newInstance(tasks,tasks)            
+                    cl.delegate = params                                            
+                    if (cl()) {                                                     
+                        m.invoke(tasks)                                             
+                    }
+                } else {
+                    m.invoke(tasks)                                                 
+                }
+            }
+        }
+        tasks                                                                       
+    }
+}
+create a new instance of the class passed as an argument (the task class)
+emulate an environment which is JDK 6 and not Windows
+iterate on all declared methods of the task class
+if the method is public and takes no-argument
+try to find the @OnlyIf annotation
+if it is found get the value and create a new Closure out of it
+set the delegate of the closure to our environment variable
+call the closure, which is the annotation closure. It will return a boolean
+if it is true, call the method
+if the method is not annotated with @OnlyIf, execute the method anyway
+after that, return the task object
+Then the runner can be used this way:
+
+def tasks = Runner.run(Tasks)
+assert tasks.result == [1, 'JDK 6'] as Set
+1.7.6. Meta-annotations
+Declaring meta-annotations
+Meta-annotations, also known as annotation aliases are annotations that are replaced at compile time by other annotations (one meta-annotation is an alias for one or more annotations). Meta-annotations can be used to reduce the size of code involving multiple annotations.
+
+Let’s start with a simple example. Imagine you have the @Service and @Transactional annotations and that you want to annotate a class with both:
+
+@Service
+@Transactional
+class MyTransactionalService {}
+Given the multiplication of annotations that you could add to the same class, a meta-annotation could help by reducing the two annotations with a single one having the very same semantics. For example, we might want to write this instead:
+
+@TransactionalService                           
+class MyTransactionalService {}
+@TransactionalService is a meta-annotation
+A meta-annotation is declared as a regular annotation but annotated with @AnnotationCollector and the list of annotations it is collecting. In our case, the @TransactionalService annotation can be written:
+
+import groovy.transform.AnnotationCollector
+
+@Service                                        
+@Transactional                                  
+@AnnotationCollector                            
+@interface TransactionalService {
+}
+annotate the meta-annotation with @Service
+annotate the meta-annotation with @Transactional
+annotate the meta-annotation with @AnnotationCollector
+Behavior of meta-annotations
+Groovy supports both precompiled and source form meta-annotations. This means that your meta-annotation may be precompiled, or you can have it in the same source tree as the one you are currently compiling.
+
+INFO: Meta-annotations are a Groovy-only feature. There is no chance for you to annotate a Java class with a meta-annotation and hope it will do the same as in Groovy. Likewise, you cannot write a meta-annotation in Java: both the meta-annotation definition and usage have to be Groovy code. But you can happily collect Java annotations and Groovy annotations within your meta-annotation.
+
+When the Groovy compiler encounters a class annotated with a meta-annotation, it replaces it with the collected annotations. So, in our previous example, it will replace @TransactionalService with @Transactional and @Service:
+
+def annotations = MyTransactionalService.annotations*.annotationType()
+assert (Service in annotations)
+assert (Transactional in annotations)
+The conversion from a meta-annotation to the collected annotations is performed during the semantic analysis compilation phase. 
+
+In addition to replacing the alias with the collected annotations, a meta-annotation is capable of processing them, including arguments.
+
+Meta-annotation parameters
+Meta-annotations can collect annotations which have parameters. To illustrate this, we will imagine two annotations, each of them accepting one argument:
+
+@Timeout(after=3600)
+@Dangerous(type='explosive')
+And suppose that you want create a meta-annotation named @Explosive:
+
+@Timeout(after=3600)
+@Dangerous(type='explosive')
+@AnnotationCollector
+public @interface Explosive {}
+By default, when the annotations are replaced, they will get the annotation parameter values as they were defined in the alias. More interesting, the meta-annotation supports overriding specific values:
+
+@Explosive(after=0)                 
+class Bomb {}
+the after value provided as a parameter to @Explosive overrides the one defined in the @Timeout annotation
+If two annotations define the same parameter name, the default processor will copy the annotation value to all annotations that accept this parameter:
+
+@Retention(RetentionPolicy.RUNTIME)
+public @interface Foo {
+   String value()                                   
+}
+@Retention(RetentionPolicy.RUNTIME)
+public @interface Bar {
+    String value()                                  
+}
+
+@Foo
+@Bar
+@AnnotationCollector
+public @interface FooBar {}                         
+
+@Foo('a')
+@Bar('b')
+class Bob {}                                        
+
+assert Bob.getAnnotation(Foo).value() == 'a'        
+println Bob.getAnnotation(Bar).value() == 'b'       
+
+@FooBar('a')
+class Joe {}                                        
+assert Joe.getAnnotation(Foo).value() == 'a'        
+println Joe.getAnnotation(Bar).value() == 'a'       
+the @Foo annotation defines the value member of type String
+the @Bar annotation also defines the value member of type String
+the @FooBar meta-annotation aggregates @Foo and @Bar
+class Bob is annotated with @Foo and @Bar
+the value of the @Foo annotation on Bob is a
+while the value of the @Bar annotation on Bob is b
+class Joe is annotated with @FooBar
+then the value of the @Foo annotation on Joe is a
+and the value of the @Bar annotation on Joe is also a
+In the second case, the meta-annotation value was copied in both @Foo and @Bar annotations.
+
+It is a compile time error if the collected annotations define the same members with incompatible types. For example if on the previous example @Foo defined a value of type String but @Bar defined a value of type int.
+It is however possible to customize the behavior of meta-annotations and describe how collected annotations are expanded. We’ll look at how to do that shortly but first there is an advanced processing option to cover.
+
+Handling duplicate annotations
+The @AnnotationCollector annotation supports a mode parameter which can be used to alter how the default processor handles annotation replacement in the presence of duplicate annotations.
+
+INFO: Custom processors (discussed next) may or may not support this parameter.
+
+As an example, suppose you create a meta-annotation containing the @ToString annotation and then place your meta-annotation on a class that already has an explicit @ToString annotation. Should this be an error? Should both annotations be applied? Does one take priority over the other? There is no correct answer. In some scenarios it might be quite appropriate for any of these answers to be correct. So, rather than trying to preempt one correct way to handle the duplicate annotation issue, Groovy let’s you write your own custom meta-annotation processors (covered next) and let’s you write whatever checking logic you like within AST transforms - which are a frequent target for aggregating. Having said that, by simply setting the mode, a number of commonly expected scenarios are handled automatically for you within any extra coding. The behavior of the mode parameter is determined by the AnnotationCollectorMode enum value chosen and is summarized in the following table.
+
+Mode
+
+Description
+
+DUPLICATE
+
+Annotations from the annotation collection will always be inserted. After all transforms have been run, it will be an error if multiple annotations (excluding those with SOURCE retention) exist.
+
+PREFER_COLLECTOR
+
+Annotations from the collector will be added and any existing annotations with the same name will be removed.
+
+PREFER_COLLECTOR_MERGED
+
+Annotations from the collector will be added and any existing annotations with the same name will be removed but any new parameters found within existing annotations will be merged into the added annotation.
+
+PREFER_EXPLICIT
+
+Annotations from the collector will be ignored if any existing annotations with the same name are found.
+
+PREFER_EXPLICIT_MERGED
+
+Annotations from the collector will be ignored if any existing annotations with the same name are found but any new parameters on the collector annotation will be added to existing annotations.
+
+Custom annotation processors
+A custom annotation processor will let you choose how to expand a meta-annotation into collected annotations. The behaviour of the meta-annotation is, in this case, totally up to you. To do this, you must:
+
+create a meta-annotation processor, extending AnnotationCollectorTransform
+
+declare the processor to be used in the meta-annotation declaration
+
+To illustrate this, we are going to explore how the meta-annotation @CompileDynamic is implemented.
+
+@CompileDynamic is a meta-annotation that expands itself to @CompileStatic(TypeCheckingMode.SKIP). The problem is that the default meta annotation processor doesn’t support enums and the annotation value TypeCheckingMode.SKIP is one.
+
+The naive implementation here would not work:
+
+@CompileStatic(TypeCheckingMode.SKIP)
+@AnnotationCollector
+public @interface CompileDynamic {}
+Instead, we will define it like this:
+
+@AnnotationCollector(processor = "org.codehaus.groovy.transform.CompileDynamicProcessor")
+public @interface CompileDynamic {
+}
+The first thing you may notice is that our interface is no longer annotated with @CompileStatic. The reason for this is that we rely on the processor parameter instead, that references a class which will generate the annotation.
+
+Here is how the custom processor is implemented:
+
+CompileDynamicProcessor.groovy
+@CompileStatic                                                                  
+class CompileDynamicProcessor extends AnnotationCollectorTransform {            
+    private static final ClassNode CS_NODE = ClassHelper.make(CompileStatic)    
+    private static final ClassNode TC_NODE = ClassHelper.make(TypeCheckingMode) 
+
+    List<AnnotationNode> visit(AnnotationNode collector,                        
+                               AnnotationNode aliasAnnotationUsage,             
+                               AnnotatedNode aliasAnnotated,                    
+                               SourceUnit source) {                             
+        def node = new AnnotationNode(CS_NODE)                                  
+        def enumRef = new PropertyExpression(
+            new ClassExpression(TC_NODE), "SKIP")                               
+        node.addMember("value", enumRef)                                        
+        Collections.singletonList(node)                                         
+    }
+}
+our custom processor is written in Groovy, and for better compilation performance, we use static compilation
+the custom processor has to extend AnnotationCollectorTransform
+create a class node representing the @CompileStatic annotation type
+create a class node representing the TypeCheckingMode enum type
+collector is the @AnnotationCollector node found in the meta-annotation. Usually unused.
+aliasAnnotationUsage is the meta-annotation being expanded, here it is @CompileDynamic
+aliasAnnotated is the node being annotated with the meta-annotation
+sourceUnit is the SourceUnit being compiled
+we create a new annotation node for @CompileStatic
+we create an expression equivalent to TypeCheckingMode.SKIP
+we add that expression to the annotation node, which is now @CompileStatic(TypeCheckingMode.SKIP)
+return the generated annotation
+In the example, the visit method is the only method which has to be overridden. It is meant to return a list of annotation nodes that will be added to the node annotated with the meta-annotation. In this example, we return a single one corresponding to @CompileStatic(TypeCheckingMode.SKIP).
+
+1.8. Inheritance
+(TBD)
+
+1.9. Generics
+(TBD)
+
+2. Traits
+Traits are a structural construct of the language which allows:
+
+composition of behaviors
+
+runtime implementation of interfaces
+
+behavior overriding
+
+compatibility with static type checking/compilation
+
+They can be seen as interfaces carrying both default implementations and state. A trait is defined using the trait keyword:
+
+trait FlyingAbility {                           
+        String fly() { "I'm flying!" }          
+}
+declaration of a trait
+declaration of a method inside a trait
+Then it can be used like a normal interface using the implements keyword:
+
+class Bird implements FlyingAbility {}          
+def b = new Bird()                              
+assert b.fly() == "I'm flying!"                 
+Adds the trait FlyingAbility to the Bird class capabilities
+instantiate a new Bird
+the Bird class automatically gets the behavior of the FlyingAbility trait
+Traits allow a wide range of capabilities, from simple composition to testing, which are described thoroughly in this section.
+
+2.1. Methods
+2.1.1. Public methods
+Declaring a method in a trait can be done like any regular method in a class:
+
+trait FlyingAbility {                           
+        String fly() { "I'm flying!" }          
+}
+declaration of a trait
+declaration of a method inside a trait
+2.1.2. Abstract methods
+In addition, traits may declare abstract methods too, which therefore need to be implemented in the class implementing the trait:
+
+trait Greetable {
+    abstract String name()                              
+    String greeting() { "Hello, ${name()}!" }           
+}
+implementing class will have to declare the name method
+can be mixed with a concrete method
+Then the trait can be used like this:
+
+class Person implements Greetable {                     
+    String name() { 'Bob' }                             
+}
+
+def p = new Person()
+assert p.greeting() == 'Hello, Bob!'                    
+implement the trait Greetable
+since name was abstract, it is required to implement it
+then greeting can be called
+2.1.3. Private methods
+Traits may also define private methods. Those methods will not appear in the trait contract interface:
+
+trait Greeter {
+    private String greetingMessage() {                      
+        'Hello from a private method!'
+    }
+    String greet() {
+        def m = greetingMessage()                           
+        println m
+        m
+    }
+}
+class GreetingMachine implements Greeter {}                 
+def g = new GreetingMachine()
+assert g.greet() == "Hello from a private method!"          
+try {
+    assert g.greetingMessage()                              
+} catch (MissingMethodException e) {
+    println "greetingMessage is private in trait"
+}
+define a private method greetingMessage in the trait
+the public greet message calls greetingMessage by default
+create a class implementing the trait
+greet can be called
+but not greetingMessage
+Traits only support public and private methods. Neither protected nor package private scopes are supported.
+2.1.4. Final methods
+If we have a class implementing a trait, conceptually implementations from the trait methods are "inherited" into the class. But, in reality, there is no base class containing such implementations. Rather, they are woven directly into the class. A final modifier on a method just indicates what the modifier will be for the woven method. While it would likely be considered bad style to inherit and override or multiply inherit methods with the same signature but a mix of final and non-final variants, Groovy doesn’t prohibit this scenario. Normal method selection applies and the modifier used will be determined from the resulting method. You might consider creating a base class which implements the desired trait(s) if you want trait implementation methods that can’t be overridden.
+
+2.2. The meaning of this
+this represents the implementing instance. Think of a trait as a superclass. This means that when you write:
+
+trait Introspector {
+    def whoAmI() { this }
+}
+class Foo implements Introspector {}
+def foo = new Foo()
+then calling:
+
+foo.whoAmI()
+will return the same instance:
+
+assert foo.whoAmI().is(foo)
+2.3. Interfaces
+Traits may implement interfaces, in which case the interfaces are declared using the implements keyword:
+
+interface Named {                                       
+    String name()
+}
+trait Greetable implements Named {                      
+    String greeting() { "Hello, ${name()}!" }
+}
+class Person implements Greetable {                     
+    String name() { 'Bob' }                             
+}
+
+def p = new Person()
+assert p.greeting() == 'Hello, Bob!'                    
+assert p instanceof Named                               
+assert p instanceof Greetable                           
+declaration of a normal interface
+add Named to the list of implemented interfaces
+declare a class that implements the Greetable trait
+implement the missing name method
+the greeting implementation comes from the trait
+make sure Person implements the Named interface
+make sure Person implements the Greetable trait
+2.4. Properties
+A trait may define properties, like in the following example:
+
+trait Named {
+    String name                             
+}
+class Person implements Named {}            
+def p = new Person(name: 'Bob')             
+assert p.name == 'Bob'                      
+assert p.getName() == 'Bob'                 
+declare a property name inside a trait
+declare a class which implements the trait
+the property is automatically made visible
+it can be accessed using the regular property accessor
+or using the regular getter syntax
+2.5. Fields
+2.5.1. Private fields
+Since traits allow the use of private methods, it can also be interesting to use private fields to store state. Traits will let you do that:
+
+trait Counter {
+    private int count = 0                   
+    int count() { count += 1; count }       
+}
+class Foo implements Counter {}             
+def f = new Foo()
+assert f.count() == 1                       
+assert f.count() == 2
+declare a private field count inside a trait
+declare a public method count that increments the counter and returns it
+declare a class that implements the Counter trait
+the count method can use the private field to keep state
+This is a major difference with Java 8 virtual extension methods. While virtual extension methods do not carry state, traits can. Moreover, traits in Groovy are supported starting with Java 6, because their implementation does not rely on virtual extension methods. This means that even if a trait can be seen from a Java class as a regular interface, that interface will not have default methods, only abstract ones.
+2.5.2. Public fields
+Public fields work the same way as private fields, but in order to avoid the diamond problem, field names are remapped in the implementing class:
+
+trait Named {
+    public String name                      
+}
+class Person implements Named {}            
+def p = new Person()                        
+p.Named__name = 'Bob'                       
+declare a public field inside the trait
+declare a class implementing the trait
+create an instance of that class
+the public field is available, but renamed
+The name of the field depends on the fully qualified name of the trait. All dots (.) in package are replaced with an underscore (_), and the final name includes a double underscore. So if the type of the field is String, the name of the package is my.package, the name of the trait is Foo and the name of the field is bar, in the implementing class, the public field will appear as:
+
+String my_package_Foo__bar
+While traits support public fields, it is not recommended to use them and considered as a bad practice.
+2.6. Composition of behaviors
+Traits can be used to implement multiple inheritance in a controlled way. For example, we can have the following traits:
+
+trait FlyingAbility {                           
+        String fly() { "I'm flying!" }          
+}
+trait SpeakingAbility {
+    String speak() { "I'm speaking!" }
+}
+And a class implementing both traits:
+
+class Duck implements FlyingAbility, SpeakingAbility {} 
+
+def d = new Duck()                                      
+assert d.fly() == "I'm flying!"                         
+assert d.speak() == "I'm speaking!"                     
+the Duck class implements both FlyingAbility and SpeakingAbility
+creates a new instance of Duck
+we can call the method fly from FlyingAbility
+but also the method speak from SpeakingAbility
+Traits encourage the reuse of capabilities among objects, and the creation of new classes by the composition of existing behavior.
+
+2.7. Overriding default methods
+Traits provide default implementations for methods, but it is possible to override them in the implementing class. For example, we can slightly change the example above, by having a duck which quacks:
+
+class Duck implements FlyingAbility, SpeakingAbility {
+    String quack() { "Quack!" }                         
+    String speak() { quack() }                          
+}
+
+def d = new Duck()
+assert d.fly() == "I'm flying!"                         
+assert d.quack() == "Quack!"                            
+assert d.speak() == "Quack!"                            
+define a method specific to Duck, named quack
+override the default implementation of speak so that we use quack instead
+the duck is still flying, from the default implementation
+quack comes from the Duck class
+speak no longer uses the default implementation from SpeakingAbility
+2.8. Extending traits
+2.8.1. Simple inheritance
+Traits may extend another trait, in which case you must use the extends keyword:
+
+trait Named {
+    String name                                     
+}
+trait Polite extends Named {                        
+    String introduce() { "Hello, I am $name" }      
+}
+class Person implements Polite {}
+def p = new Person(name: 'Alice')                   
+assert p.introduce() == 'Hello, I am Alice'         
+the Named trait defines a single name property
+the Polite trait extends the Named trait
+Polite adds a new method which has access to the name property of the super-trait
+the name property is visible from the Person class implementing Polite
+as is the introduce method
+2.8.2. Multiple inheritance
+Alternatively, a trait may extend multiple traits. In that case, all super traits must be declared in the implements clause:
+
+trait WithId {                                      
+    Long id
+}
+trait WithName {                                    
+    String name
+}
+trait Identified implements WithId, WithName {}     
+WithId trait defines the id property
+WithName trait defines the name property
+Identified is a trait which inherits both WithId and WithName
+2.9. Duck typing and traits
+2.9.1. Dynamic code
+Traits can call any dynamic code, like a normal Groovy class. This means that you can, in the body of a method, call methods which are supposed to exist in an implementing class, without having to explicitly declare them in an interface. This means that traits are fully compatible with duck typing:
+
+trait SpeakingDuck {
+    String speak() { quack() }                      
+}
+class Duck implements SpeakingDuck {
+    String methodMissing(String name, args) {
+        "${name.capitalize()}!"                     
+    }
+}
+def d = new Duck()
+assert d.speak() == 'Quack!'                        
+the SpeakingDuck expects the quack method to be defined
+the Duck class does implement the method using methodMissing
+calling the speak method triggers a call to quack which is handled by methodMissing
+2.9.2. Dynamic methods in a trait
+It is also possible for a trait to implement MOP methods like methodMissing or propertyMissing, in which case implementing classes will inherit the behavior from the trait, like in this example:
+
+trait DynamicObject {                               
+    private Map props = [:]
+    def methodMissing(String name, args) {
+        name.toUpperCase()
+    }
+    def propertyMissing(String prop) {
+        props[prop]
+    }
+    void setProperty(String prop, Object value) {
+        props[prop] = value
+    }
+}
+
+class Dynamic implements DynamicObject {
+    String existingProperty = 'ok'                  
+    String existingMethod() { 'ok' }                
+}
+def d = new Dynamic()
+assert d.existingProperty == 'ok'                   
+assert d.foo == null                                
+d.foo = 'bar'                                       
+assert d.foo == 'bar'                               
+assert d.existingMethod() == 'ok'                   
+assert d.someMethod() == 'SOMEMETHOD'               
+create a trait implementing several MOP methods
+the Dynamic class defines a property
+the Dynamic class defines a method
+calling an existing property will call the method from Dynamic
+calling an non-existing property will call the method from the trait
+will call setProperty defined on the trait
+will call getProperty defined on the trait
+calling an existing method on Dynamic
+but calling a non existing method thanks to the trait methodMissing
+2.10. Multiple inheritance conflicts
+2.10.1. Default conflict resolution
+It is possible for a class to implement multiple traits. If some trait defines a method with the same signature as a method in another trait, we have a conflict:
+
+trait A {
+    String exec() { 'A' }               
+}
+trait B {
+    String exec() { 'B' }               
+}
+class C implements A,B {}               
+trait A defines a method named exec returning a String
+trait B defines the very same method
+class C implements both traits
+In this case, the default behavior is that the method from the last declared trait in the implements clause wins. Here, B is declared after A so the method from B will be picked up:
+
+def c = new C()
+assert c.exec() == 'B'
+2.10.2. User conflict resolution
+In case this behavior is not the one you want, you can explicitly choose which method to call using the Trait.super.foo syntax. In the example above, we can ensure the method from trait A is invoked by writing this:
+
+class C implements A,B {
+    String exec() { A.super.exec() }    
+}
+def c = new C()
+assert c.exec() == 'A'                  
+explicit call of exec from the trait A
+calls the version from A instead of using the default resolution, which would be the one from B
+2.11. Runtime implementation of traits
+2.11.1. Implementing a trait at runtime
+Groovy also supports implementing traits dynamically at runtime. It allows you to "decorate" an existing object using a trait. As an example, let’s start with this trait and the following class:
+
+trait Extra {
+    String extra() { "I'm an extra method" }            
+}
+class Something {                                       
+    String doSomething() { 'Something' }                
+}
+the Extra trait defines an extra method
+the Something class does not implement the Extra trait
+Something only defines a method doSomething
+Then if we do:
+
+def s = new Something()
+s.extra()
+the call to extra would fail because Something is not implementing Extra. It is possible to do it at runtime with the following syntax:
+
+def s = new Something() as Extra                        
+s.extra()                                               
+s.doSomething()                                         
+use of the as keyword to coerce an object to a trait at runtime
+then extra can be called on the object
+and doSomething is still callable
+When coercing an object to a trait, the result of the operation is not the same instance. It is guaranteed that the coerced object will implement both the trait and the interfaces that the original object implements, but the result will not be an instance of the original class.
+2.11.2. Implementing multiple traits at once
+Should you need to implement several traits at once, you can use the withTraits method instead of the as keyword:
+
+trait A { void methodFromA() {} }
+trait B { void methodFromB() {} }
+
+class C {}
+
+def c = new C()
+c.methodFromA()                     
+c.methodFromB()                     
+def d = c.withTraits A, B           
+d.methodFromA()                     
+d.methodFromB()                     
+call to methodFromA will fail because C doesn’t implement A
+call to methodFromB will fail because C doesn’t implement B
+withTrait will wrap c into something which implements A and B
+methodFromA will now pass because d implements A
+methodFromB will now pass because d also implements B
+When coercing an object to multiple traits, the result of the operation is not the same instance. It is guaranteed that the coerced object will implement both the traits and the interfaces that the original object implements, but the result will not be an instance of the original class.
+2.12. Chaining behavior
+Groovy supports the concept of stackable traits. The idea is to delegate from one trait to the other if the current trait is not capable of handling a message. To illustrate this, let’s imagine a message handler interface like this:
+
+interface MessageHandler {
+    void on(String message, Map payload)
+}
+Then you can compose a message handler by applying small behaviors. For example, let’s define a default handler in the form of a trait:
+
+trait DefaultHandler implements MessageHandler {
+    void on(String message, Map payload) {
+        println "Received $message with payload $payload"
+    }
+}
+Then any class can inherit the behavior of the default handler by implementing the trait:
+
+class SimpleHandler implements DefaultHandler {}
+Now what if you want to log all messages, in addition to the default handler? One option is to write this:
+
+class SimpleHandlerWithLogging implements DefaultHandler {
+    void on(String message, Map payload) {                                  
+        println "Seeing $message with payload $payload"                     
+        DefaultHandler.super.on(message, payload)                           
+    }
+}
+explicitly implement the on method
+perform logging
+continue by delegating to the DefaultHandler trait
+This works but this approach has drawbacks:
+
+the logging logic is bound to a "concrete" handler
+
+we have an explicit reference to DefaultHandler in the on method, meaning that if we happen to change the trait that our class implements, code will be broken
+
+As an alternative, we can write another trait which responsibility is limited to logging:
+
+trait LoggingHandler implements MessageHandler {                            
+    void on(String message, Map payload) {
+        println "Seeing $message with payload $payload"                     
+        super.on(message, payload)                                          
+    }
+}
+the logging handler is itself a handler
+prints the message it receives
+then super makes it delegate the call to the next trait in the chain
+Then our class can be rewritten as this:
+
+class HandlerWithLogger implements DefaultHandler, LoggingHandler {}
+def loggingHandler = new HandlerWithLogger()
+loggingHandler.on('test logging', [:])
+which will print:
+
+Seeing test logging with payload [:]
+Received test logging with payload [:]
+As the priority rules imply that LoggerHandler wins because it is declared last, then a call to on will use the implementation from LoggingHandler. But the latter has a call to super, which means the next trait in the chain. Here, the next trait is DefaultHandler so both will be called:
+
+The interest of this approach becomes more evident if we add a third handler, which is responsible for handling messages that start with say:
+
+trait SayHandler implements MessageHandler {
+    void on(String message, Map payload) {
+        if (message.startsWith("say")) {                                    
+            println "I say ${message - 'say'}!"
+        } else {
+            super.on(message, payload)                                      
+        }
+    }
+}
+a handler specific precondition
+if the precondition is not met, pass the message to the next handler in the chain
+Then our final handler looks like this:
+
+class Handler implements DefaultHandler, SayHandler, LoggingHandler {}
+def h = new Handler()
+h.on('foo', [:])
+h.on('sayHello', [:])
+Which means:
+
+messages will first go through the logging handler
+
+the logging handler calls super which will delegate to the next handler, which is the SayHandler
+
+if the message starts with say, then the handler consumes the message
+
+if not, the say handler delegates to the next handler in the chain
+
+This approach is very powerful because it allows you to write handlers that do not know each other and yet let you combine them in the order you want. For example, if we execute the code, it will print:
+
+Seeing foo with payload [:]
+Received foo with payload [:]
+Seeing sayHello with payload [:]
+I say Hello!
+but if we move the logging handler to be the second one in the chain, the output is different:
+
+class AlternateHandler implements DefaultHandler, LoggingHandler, SayHandler {}
+h = new AlternateHandler()
+h.on('foo', [:])
+h.on('sayHello', [:])
+prints:
+
+Seeing foo with payload [:]
+Received foo with payload [:]
+I say Hello!
+The reason is that now, since the SayHandler consumes the message without calling super, the logging handler is not called anymore.
+
+2.12.1. Semantics of super inside a trait
+If a class implements multiple traits and a call to an unqualified super is found, then:
+
+if the class implements another trait, the call delegates to the next trait in the chain
+
+if there isn’t any trait left in the chain, super refers to the super class of the implementing class (this)
+
+For example, it is possible to decorate final classes thanks to this behavior:
+
+trait Filtering {                                       
+    StringBuilder append(String str) {                  
+        def subst = str.replace('o','')                 
+        super.append(subst)                             
+    }
+    String toString() { super.toString() }              
+}
+def sb = new StringBuilder().withTraits Filtering       
+sb.append('Groovy')
+assert sb.toString() == 'Grvy'                          
+define a trait named Filtering, supposed to be applied on a StringBuilder at runtime
+redefine the append method
+remove all 'o’s from the string
+then delegate to super
+in case toString is called, delegate to super.toString
+runtime implementation of the Filtering trait on a StringBuilder instance
+the string which has been appended no longer contains the letter o
+In this example, when super.append is encountered, there is no other trait implemented by the target object, so the method which is called is the original append method, that is to say the one from StringBuilder. The same trick is used for toString, so that the string representation of the proxy object which is generated delegates to the toString of the StringBuilder instance.
+
+2.13. Advanced features
+2.13.1. SAM type coercion
+If a trait defines a single abstract method, it is candidate for SAM (Single Abstract Method) type coercion. For example, imagine the following trait:
+
+trait Greeter {
+    String greet() { "Hello $name" }        
+    abstract String getName()               
+}
+the greet method is not abstract and calls the abstract method getName
+getName is an abstract method
+Since getName is the single abstract method in the Greeter trait, you can write:
+
+Greeter greeter = { 'Alice' }               
+the closure "becomes" the implementation of the getName single abstract method
+or even:
+
+void greet(Greeter g) { println g.greet() } 
+greet { 'Alice' }                           
+the greet method accepts the SAM type Greeter as parameter
+we can call it directly with a closure
+2.13.2. Differences with Java 8 default methods
+In Java 8, interfaces can have default implementations of methods. If a class implements an interface and does not provide an implementation for a default method, then the implementation from the interface is chosen. Traits behave the same but with a major difference: the implementation from the trait is always used if the class declares the trait in its interface list and that it doesn’t provide an implementation even if a super class does.
+
+This feature can be used to compose behaviors in an very precise way, in case you want to override the behavior of an already implemented method.
+
+To illustrate the concept, let’s start with this simple example:
+
+import groovy.transform.CompileStatic
+import org.codehaus.groovy.control.CompilerConfiguration
+import org.codehaus.groovy.control.customizers.ASTTransformationCustomizer
+import org.codehaus.groovy.control.customizers.ImportCustomizer
+
+class SomeTest extends GroovyTestCase {
+    def config
+    def shell
+
+    void setup() {
+        config = new CompilerConfiguration()
+        shell = new GroovyShell(config)
+    }
+    void testSomething() {
+        assert shell.evaluate('1+1') == 2
+    }
+    void otherTest() { /* ... */ }
+}
+In this example, we create a simple test case which uses two properties (config and shell) and uses those in multiple test methods. Now imagine that you want to test the same, but with another distinct compiler configuration. One option is to create a subclass of SomeTest:
+
+class AnotherTest extends SomeTest {
+    void setup() {
+        config = new CompilerConfiguration()
+        config.addCompilationCustomizers( ... )
+        shell = new GroovyShell(config)
+    }
+}
+It works, but what if you have actually multiple test classes, and that you want to test the new configuration for all those test classes? Then you would have to create a distinct subclass for each test class:
+
+class YetAnotherTest extends SomeTest {
+    void setup() {
+        config = new CompilerConfiguration()
+        config.addCompilationCustomizers( ... )
+        shell = new GroovyShell(config)
+    }
+}
+Then what you see is that the setup method of both tests is the same. The idea, then, is to create a trait:
+
+trait MyTestSupport {
+    void setup() {
+        config = new CompilerConfiguration()
+        config.addCompilationCustomizers( new ASTTransformationCustomizer(CompileStatic) )
+        shell = new GroovyShell(config)
+    }
+}
+Then use it in the subclasses:
+
+class AnotherTest extends SomeTest implements MyTestSupport {}
+class YetAnotherTest extends SomeTest2 implements MyTestSupport {}
+...
+It would allow us to dramatically reduce the boilerplate code, and reduces the risk of forgetting to change the setup code in case we decide to change it. Even if setup is already implemented in the super class, since the test class declares the trait in its interface list, the behavior will be borrowed from the trait implementation!
+
+This feature is in particular useful when you don’t have access to the super class source code. It can be used to mock methods or force a particular implementation of a method in a subclass. It lets you refactor your code to keep the overridden logic in a single trait and inherit a new behavior just by implementing it. The alternative, of course, is to override the method in every place you would have used the new code.
+
+It’s worth noting that if you use runtime traits, the methods from the trait are always preferred to those of the proxied object:
+class Person {
+    String name                                         
+}
+trait Bob {
+    String getName() { 'Bob' }                          
+}
+
+def p = new Person(name: 'Alice')
+assert p.name == 'Alice'                                
+def p2 = p as Bob                                       
+assert p2.name == 'Bob'                                 
+the Person class defines a name property which results in a getName method
+Bob is a trait which defines getName as returning Bob
+the default object will return Alice
+p2 coerces p into Bob at runtime
+getName returns Bob because getName is taken from the trait
+Again, don’t forget that dynamic trait coercion returns a distinct object which only implements the original interfaces, as well as the traits.
+2.14. Differences with mixins
+There are several conceptual differences with mixins, as they are available in Groovy. Note that we are talking about runtime mixins, not the @Mixin annotation which is deprecated in favour of traits.
+
+First of all, methods defined in a trait are visible in bytecode:
+
+internally, the trait is represented as an interface (without default or static methods) and several helper classes
+
+this means that an object implementing a trait effectively implements an interface
+
+those methods are visible from Java
+
+they are compatible with type checking and static compilation
+
+Methods added through a mixin are, on the contrary, only visible at runtime:
+
+class A { String methodFromA() { 'A' } }        
+class B { String methodFromB() { 'B' } }        
+A.metaClass.mixin B                             
+def o = new A()
+assert o.methodFromA() == 'A'                   
+assert o.methodFromB() == 'B'                   
+assert o instanceof A                           
+assert !(o instanceof B)                        
+class A defines methodFromA
+class B defines methodFromB
+mixin B into A
+we can call methodFromA
+we can also call methodFromB
+the object is an instance of A
+but it’s not an instanceof B
+The last point is actually a very important and illustrates a place where mixins have an advantage over traits: the instances are not modified, so if you mixin some class into another, there isn’t a third class generated, and methods which respond to A will continue responding to A even if mixed in.
+
+2.15. Static methods, properties and fields
+The following instructions are subject to caution. Static member support is work in progress and still experimental. The information below is valid for 2.5.7 only.
+It is possible to define static methods in a trait, but it comes with numerous limitations:
+
+Traits with static methods cannot be compiled statically or type checked. All static methods, properties and field are accessed dynamically (it’s a limitation from the JVM).
+
+Static methods do not appear within the generated interfaces for each trait.
+
+The trait is interpreted as a template for the implementing class, which means that each implementing class will get its own static methods, properties and fields. So a static member declared on a trait doesn’t belong to the Trait, but to it’s implementing class.
+
+You should typically not mix static and instance methods of the same signature. The normal rules for applying traits apply (including multiple inheritance conflict resolution). If the method chosen is static but some implemented trait has an instance variant, a compilation error will occur. If the method chosen is the instance variant, the static variant will be ignored (the behavior is similar to static methods in Java interfaces for this case).
+
+Let’s start with a simple example:
+
+trait TestHelper {
+    public static boolean CALLED = false        
+    static void init() {                        
+        CALLED = true                           
+    }
+}
+class Foo implements TestHelper {}
+Foo.init()                                      
+assert Foo.TestHelper__CALLED                   
+the static field is declared in the trait
+a static method is also declared in the trait
+the static field is updated within the trait
+a static method init is made available to the implementing class
+the static field is remapped to avoid the diamond issue
+As usual, it is not recommended to use public fields. Anyway, should you want this, you must understand that the following code would fail:
+
+Foo.CALLED = true
+because there is no static field CALLED defined on the trait itself. Likewise, if you have two distinct implementing classes, each one gets a distinct static field:
+
+class Bar implements TestHelper {}              
+class Baz implements TestHelper {}              
+Bar.init()                                      
+assert Bar.TestHelper__CALLED                   
+assert !Baz.TestHelper__CALLED                  
+class Bar implements the trait
+class Baz also implements the trait
+init is only called on Bar
+the static field CALLED on Bar is updated
+but the static field CALLED on Baz is not, because it is distinct
+2.16. Inheritance of state gotchas
+We have seen that traits are stateful. It is possible for a trait to define fields or properties, but when a class implements a trait, it gets those fields/properties on a per-trait basis. So consider the following example:
+
+trait IntCouple {
+    int x = 1
+    int y = 2
+    int sum() { x+y }
+}
+The trait defines two properties, x and y, as well as a sum method. Now let’s create a class which implements the trait:
+
+class BaseElem implements IntCouple {
+    int f() { sum() }
+}
+def base = new BaseElem()
+assert base.f() == 3
+The result of calling f is 3, because f delegates to sum in the trait, which has state. But what if we write this instead?
+
+class Elem implements IntCouple {
+    int x = 3                                       
+    int y = 4                                       
+    int f() { sum() }                               
+}
+def elem = new Elem()
+Override property x
+Override property y
+Call sum from trait
+If you call elem.f(), what is the expected output? Actually it is:
+
+assert elem.f() == 3
+The reason is that the sum method accesses the fields of the trait. So it is using the x and y values defined in the trait. If you want to use the values from the implementing class, then you need to dereference fields by using getters and setters, like in this last example:
+
+trait IntCouple {
+    int x = 1
+    int y = 2
+    int sum() { getX()+getY() }
+}
+
+class Elem implements IntCouple {
+    int x = 3
+    int y = 4
+    int f() { sum() }
+}
+def elem = new Elem()
+assert elem.f() == 7
+2.17. Self types
+2.17.1. Type constraints on traits
+Sometimes you will want to write a trait that can only be applied to some type. For example, you may want to apply a trait on a class that extends another class which is beyond your control, and still be able to call those methods. To illustrate this, let’s start with this example:
+
+class CommunicationService {
+    static void sendMessage(String from, String to, String message) {       
+        println "$from sent [$message] to $to"
+    }
+}
+
+class Device { String id }                                                  
+
+trait Communicating {
+    void sendMessage(Device to, String message) {
+        CommunicationService.sendMessage(id, to.id, message)                
+    }
+}
+
+class MyDevice extends Device implements Communicating {}                   
+
+def bob = new MyDevice(id:'Bob')
+def alice = new MyDevice(id:'Alice')
+bob.sendMessage(alice,'secret')                                             
+A Service class, beyond your control (in a library, …​) defines a sendMessage method
+A Device class, beyond your control (in a library, …​)
+Defines a communicating trait for devices that can call the service
+Defines MyDevice as a communicating device
+The method from the trait is called, and id is resolved
+It is clear, here, that the Communicating trait can only apply to Device. However, there’s no explicit contract to indicate that, because traits cannot extend classes. However, the code compiles and runs perfectly fine, because id in the trait method will be resolved dynamically. The problem is that there is nothing that prevents the trait from being applied to any class which is not a Device. Any class which has an id would work, while any class that does not have an id property would cause a runtime error.
+
+The problem is even more complex if you want to enable type checking or apply @CompileStatic on the trait: because the trait knows nothing about itself being a Device, the type checker will complain saying that it does not find the id property.
+
+One possibility is to explicitly add a getId method in the trait, but it would not solve all issues. What if a method requires this as a parameter, and actually requires it to be a Device?
+
+class SecurityService {
+    static void check(Device d) { if (d.id==null) throw new SecurityException() }
+}
+If you want to be able to call this in the trait, then you will explicitly need to cast this into a Device. This can quickly become unreadable with explicit casts to this everywhere.
+
+2.17.2. The @SelfType annotation
+In order to make this contract explicit, and to make the type checker aware of the type of itself, Groovy provides a @SelfType annotation that will:
+
+let you declare the types that a class that implements this trait must inherit or implement
+
+throw a compile time error if those type constraints are not satisfied
+
+So in our previous example, we can fix the trait using the @groovy.transform.SelfType annotation:
+
+@SelfType(Device)
+@CompileStatic
+trait Communicating {
+    void sendMessage(Device to, String message) {
+        SecurityService.check(this)
+        CommunicationService.sendMessage(id, to.id, message)
+    }
+}
+Now if you try to implement this trait on a class that is not a device, a compile-time error will occur:
+
+class MyDevice implements Communicating {} // forgot to extend Device
+The error will be:
+
+class 'MyDevice' implements trait 'Communicating' but does not extend self type class 'Device'
+In conclusion, self types are a powerful way of declaring constraints on traits without having to declare the contract directly in the trait or having to use casts everywhere, maintaining separation of concerns as tight as it should be.
+
+2.18. Limitations
+2.18.1. Compatibility with AST transformations
+Traits are not officially compatible with AST transformations. Some of them, like @CompileStatic will be applied on the trait itself (not on implementing classes), while others will apply on both the implementing class and the trait. There is absolutely no guarantee that an AST transformation will run on a trait as it does on a regular class, so use it at your own risk!
+2.18.2. Prefix and postfix operations
+Within traits, prefix and postfix operations are not allowed if they update a field of the trait:
+
+trait Counting {
+    int x
+    void inc() {
+        x++                             
+    }
+    void dec() {
+        --x                             
+    }
+}
+class Counter implements Counting {}
+def c = new Counter()
+c.inc()
+x is defined within the trait, postfix increment is not allowed
+x is defined within the trait, prefix decrement is not allowed
+A workaround is to use the += operator instead.
+
+Groovy
+Learn
+Documentation
+Download
+Support
+Contribute
+Ecosystem
+About
+Source code
+Security
+Books
+Thanks
+Sponsorship
+FAQ
+Search
+Socialize
+Discuss on the mailing-list
+Groovy newsletter
+Groovy on Twitter
+Events and conferences
+Source code on GitHub
+Report issues in Jira
+Stack Overflow questions
+Slack Community
+The Groovy programming language is supported by the Apache Software Foundation and the Groovy community
+
+The Apache Software Foundation
+© 2003-2019 the Apache Groovy project — Groovy is Open Source, Apache 2 License
