@@ -1,0 +1,7 @@
+#!/usr/bin/bash
+set -e
+rm *.mli *.cmo hello-world &>/dev/null || true
+ocamlc -c HelloWorld.ml
+ocamlc -c Main.ml
+ocamlc HelloWorld.cmo Main.cmo -o hello-world
+./hello-world
