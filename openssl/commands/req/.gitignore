@@ -2,3 +2,5 @@
 /certificate_request.pem
 /private_key.pem
 /public_key.pem
+/myprivatekey.pem
+/privkey.pem

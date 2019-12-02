@@ -1,0 +1,38 @@
+#!/usr/bin/bash
+
+set -e
+. ~/inside/interaction.bsh
+
+message "This script shows what happen when we create a new certificate request and don't provide a private key."
+
+if false ; then
+message "The command will generate an encrypted private key for us in privkey.pem, and will ask us for a password."
+message "Password 'mypassword' will do."
+run "openssl req -new -out certificate_request.pem -batch"
+run "cat certificate_request.pem"
+run "cat privkey.pem"
+
+message "Here's how to specify the password on the command line."
+run "openssl req -new -out certificate_request.pem -passout pass:mypassword -batch"
+run "cat certificate_request.pem"
+run "cat privkey.pem"
+
+message "You may also want to specify the private key file name."
+run "openssl req -new -out certificate_request.pem -passout pass:mypassword -keyout myprivatekey.pem -batch"
+run "cat certificate_request.pem"
+run "cat myprivatekey.pem"
+
+message "You can also disable encryption, and then you don't need to remember another password."
+message "Option -nodes does that. In means \"No DES\", not \"nodes\"."
+run "openssl req -new -out certificate_request.pem -nodes -keyout myprivatekey.pem -batch"
+run "cat certificate_request.pem"
+message "Notice that the private key is not encrypted."
+run "cat myprivatekey.pem"
+fi
+
+message "Finally, you may wonder why we use the -batch option in all the examples."
+message "The -batch option uses the default values specified in the SSL configuration file to generate the certificate."
+message "If you don't specify it, you have to give this information manually."
+run "openssl req -new -out certificate_request.pem -nodes -keyout myprivatekey.pem"
+run "cat certificate_request.pem"
+run "cat myprivatekey.pem"
