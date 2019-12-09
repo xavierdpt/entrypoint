@@ -3,10 +3,53 @@
 set -e
 . ~/inside/interaction.bsh
 
+if false ; then
 message "This script is about the OpenSSL 'x509' command wich is about x509 certificates."
 
 message "Here's some documentation about this command."
 run "openssl x509 -help"
+
+message "Let's first generate a private key, the corresponding public key and a certificate request."
+message "See the examples about the respective commands for more information."
+run "openssl genrsa -out private_key.pem"
+run "cat private_key.pem"
+run "openssl rsa -in private_key.pem -pubout -out public_key.pem"
+run "cat public_key.pem"
+run "openssl req -new -key private_key.pem -out certificate_request.pem -batch -subj '/C=XX/ST=mystate/L=mylocality/O=myorganization/OU=myorganizationunit/CN=mycommonname/emailAddress=myemail/'"
+run "cat certificate_request.pem"
+
+message "Now we can create a certificate from the certificate request, which we will with a new private key."
+run "openssl genrsa -out other_private_key.pem"
+run "openssl x509 -req -in certificate_request.pem -signkey other_private_key.pem -out certificate.pem"
+
+message "Let's inspect this certificate"
+run "openssl x509 -in certificate.pem -subject -nocert"
+run "openssl x509 -in certificate.pem -issuer -nocert"
+run "openssl x509 -in certificate.pem -email -nocert"
+run "openssl x509 -in certificate.pem -startdate -nocert"
+run "openssl x509 -in certificate.pem -enddate -nocert"
+run "openssl x509 -in certificate.pem -purpose -nocert"
+run "openssl x509 -in certificate.pem -dates -nocert"
+run "openssl x509 -in certificate.pem -modulus -nocert"
+run "openssl x509 -in certificate.pem -subject_hash -nocert"
+run "openssl x509 -in certificate.pem -issuer_hash -nocert"
+run "openssl x509 -in certificate.pem -pubkey -nocert"
+run "openssl x509 -in certificate.pem -fingerprint -nocert"
+run "openssl x509 -in certificate.pem -alias -nocert"
+run "openssl x509 -in certificate.pem -ocspid -nocert"
+run "openssl x509 -in certificate.pem -ocsp_uri -nocert"
+run "openssl x509 -in certificate.pem -serial -nocert"
+run "openssl x509 -in certificate.pem -text -nocert"
+
+message "Here's how to set the alias."
+run "openssl x509 -req -in certificate_request.pem -signkey other_private_key.pem -setalias myalias -out certificate.pem"
+run "openssl x509 -in certificate.pem -alias -nocert"
+fi
+
+message "Here's how to clear all purposes."
+run "openssl x509 -req -in certificate_request.pem -signkey other_private_key.pem -clrtrust -clrext -out certificate.pem"
+run "openssl x509 -in certificate.pem -purpose -nocert"
+
 
 # -help                 Display this summary
 # -inform format        Input format - default PEM (one of DER or PEM)
@@ -15,31 +58,13 @@ run "openssl x509 -help"
 # -out outfile          Output file - default stdout
 # -keyform PEM|DER      Private key format - default PEM
 # -passin val           Private key password/pass-phrase source
-# -serial               Print serial number value
-# -subject_hash         Print subject hash value
-# -issuer_hash          Print issuer hash value
-# -hash                 Synonym for -subject_hash
-# -subject              Print subject DN
-# -issuer               Print issuer DN
-# -email                Print email address(es)
-# -startdate            Set notBefore field
-# -enddate              Set notAfter field
-# -purpose              Print out certificate purposes
-# -dates                Both Before and After dates
-# -modulus              Print the RSA key modulus
-# -pubkey               Output the public key
-# -fingerprint          Print the certificate fingerprint
-# -alias                Output certificate alias
 # -noout                No output, just status
 # -nocert               No certificate output
-# -ocspid               Print OCSP hash values for the subject name and public key
-# -ocsp_uri             Print OCSP Responder URL(s)
 # -trustout             Output a trusted certificate
 # -clrtrust             Clear all trusted purposes
 # -clrext               Clear all certificate extensions
 # -addtrust val         Trust certificate for a given purpose
 # -addreject val        Reject certificate for a given purpose
-# -setalias val         Set certificate alias
 # -days int             How long till expiry of a signed certificate - def 30 days
 # -checkend intmax      Check whether the cert expires in the next arg seconds
 #                       Exit 1 if so, 0 if not
@@ -51,7 +76,6 @@ run "openssl x509 -help"
 # -CAcreateserial       Create serial number file if it does not exist
 # -CAserial val         Serial file
 # -set_serial val       Serial number to use
-# -text                 Print the certificate in text form
 # -ext val              Print various X509V3 extensions
 # -C                    Print out C code forms
 # -extfile infile       File with X509V3 extensions to add
